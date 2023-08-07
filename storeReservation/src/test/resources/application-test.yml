@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3305/store_reservation_test
+    username: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: # 비밀번호 노출로 인한 삭제
+
+  jpa:
+    database: mysql
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+
+
+  jwt:
+    secret: iwantogoodeveloper
+
+  openapi:
+    secret: # api 키 노출로 인한 키 삭제

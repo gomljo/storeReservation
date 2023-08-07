@@ -30,8 +30,8 @@ import static com.store.reservation.store.store.util.implementation.juso.constan
 @Getter
 public class JusoOpenApi implements GeoCoding {
 
-    // TODO: 2023-08-01
-    // 상황 별 에러 처리
+    //  공간 정보 오픈 플랫폼의 오픈 API를 사용
+    //  https://www.vworld.kr/dev/v4dv_geocoderguide2_s001.do
 
     @Value("${spring.openapi.secret}")
     private String apikey;
