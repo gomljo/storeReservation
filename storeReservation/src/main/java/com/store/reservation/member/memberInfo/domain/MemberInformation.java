@@ -37,4 +37,8 @@ public class Member extends BaseEntity {
             joinColumns = @JoinColumn(name = "memberId")
     )
     private List<String> roles;
+
+    public boolean isSame(Long id){
+        return this.memberId == id;
+    }
 }

@@ -1,4 +1,4 @@
-package com.store.reservation.store.store.domain.vo;
+package com.store.reservation.store.store.domain.vo.location;
 
 import lombok.Getter;
 
@@ -7,16 +7,16 @@ import java.util.Objects;
 
 @Embeddable
 @Getter
-public class Location {
+public class Coordinate {
 
     private double lat;
     private double lnt;
     private String roadName;
 
-    public Location() {
+    public Coordinate() {
 
     }
-    public Location(double lat, double lnt, String roadName) {
+    public Coordinate(double lat, double lnt, String roadName) {
         this.lat = lat;
         this.lnt = lnt;
         this.roadName = roadName;
@@ -25,11 +25,11 @@ public class Location {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Location)) return false;
-        Location location = (Location) o;
-        return Double.compare(location.lat, lat) == 0
-                && Double.compare(location.lnt, lnt) == 0
-                && Objects.equals(roadName, location.roadName);
+        if (!(o instanceof Coordinate)) return false;
+        Coordinate coordinate = (Coordinate) o;
+        return Double.compare(coordinate.lat, lat) == 0
+                && Double.compare(coordinate.lnt, lnt) == 0
+                && Objects.equals(roadName, coordinate.roadName);
     }
 
     @Override

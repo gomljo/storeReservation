@@ -18,8 +18,8 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     Optional<Store> findByStoreId(long storeId);
     @Query("SELECT s " +
             "FROM Store s " +
-            "WHERE FUNCTION('ST_Distance_Sphere', FUNCTION('POINT', :centerLng, :centerLat), FUNCTION('POINT', s.location.lnt, s.location.lat)) <= :radiusMeters " +
-            "ORDER BY FUNCTION('ST_Distance_Sphere', FUNCTION('POINT', :centerLng, :centerLat), FUNCTION('POINT', s.location.lnt, s.location.lat)) ASC")
+            "WHERE FUNCTION('ST_Distance_Sphere', FUNCTION('POINT', :centerLng, :centerLat), FUNCTION('POINT', s.coordinate.lnt, s.coordinate.lat)) <= :radiusMeters " +
+            "ORDER BY FUNCTION('ST_Distance_Sphere', FUNCTION('POINT', :centerLng, :centerLat), FUNCTION('POINT', s.coordinate.lnt, s.coordinate.lat)) ASC")
     List<Store> searchStoreByRadiusDistanceASC(@Param("centerLat") double centerLat,
                                                @Param("centerLng") double centerLng,
                                                @Param("radiusMeters") double radiusMeters,
@@ -27,7 +27,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     @Query("SELECT s " +
             "FROM Store s " +
-            "WHERE FUNCTION('ST_Distance_Sphere', FUNCTION('POINT', :centerLng, :centerLat), FUNCTION('POINT', s.location.lnt, s.location.lat)) <= :radiusMeters " +
+            "WHERE FUNCTION('ST_Distance_Sphere', FUNCTION('POINT', :centerLng, :centerLat), FUNCTION('POINT', s.coordinate.lnt, s.coordinate.lat)) <= :radiusMeters " +
             "ORDER BY s.storeName ASC ")
     List<Store> searchStoreByRadiusAlphabeticASC(@Param("centerLat") double centerLat,
                                                  @Param("centerLng") double centerLng,
@@ -36,11 +36,10 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     @Query("SELECT s " +
             "FROM Store s " +
-            "WHERE FUNCTION('ST_Distance_Sphere', FUNCTION('POINT', :centerLng, :centerLat), FUNCTION('POINT', s.location.lnt, s.location.lat)) <= :radiusMeters " +
+            "WHERE FUNCTION('ST_Distance_Sphere', FUNCTION('POINT', :centerLng, :centerLat), FUNCTION('POINT', s.coordinate.lnt, s.coordinate.lat)) <= :radiusMeters " +
             "ORDER BY s.starRating DESC, s.storeName ASC")
     List<Store> searchStoreByRadiusStarRatingDESC(@Param("centerLat") double centerLat,
                                                   @Param("centerLng") double centerLng,
                                                   @Param("radiusMeters") double radiusMeters,
                                                   Pageable paging);
-
 }

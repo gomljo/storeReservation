@@ -1,13 +1,13 @@
 package com.store.reservation.store.store.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.store.reservation.member.domain.Member;
-import com.store.reservation.member.model.BaseEntity;
+import com.store.reservation.member.manager.persistance.entity.Manager;
+import com.store.reservation.member.memberInfo.model.BaseEntity;
 import com.store.reservation.reservation.reservation.domain.model.Reservation;
 import com.store.reservation.review.domain.Review;
 import com.store.reservation.store.food.domain.Food;
-import com.store.reservation.store.store.domain.vo.Location;
-import com.store.reservation.store.store.dto.update.UpdateStore;
+import com.store.reservation.store.store.domain.vo.location.Address;
+import com.store.reservation.store.store.domain.vo.location.Location;
+import com.store.reservation.store.store.domain.vo.operatingHours.OperatingHours;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Getter
@@ -34,51 +33,38 @@ public class Store extends BaseEntity {
     private String storeName;
 
     @OneToOne
-    @JoinColumn(name = "memberId")
-    private Member manager;
-
-    @Embedded
-    private Location location;
+    @JoinColumn(name = "manager_id")
+    private Manager manager;
 
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY)
     @Builder.Default
     private List<Food> foods = new ArrayList<>();
 
-    @JsonManagedReference
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY)
     @Builder.Default
     private List<Reservation> reservations = new ArrayList<>();
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "store",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     @Builder.Default
     private List<Review> reviews = new ArrayList<>();
 
-    private boolean isChangeLocation(Location location){
-        return location.equals(this.location);
-    }
-    private boolean isChangeStoreName(String storeName){
-        return Objects.equals(storeName, this.storeName);
-    }
+    @Embedded
+    private OperatingHours operatingHours;
 
-    public void update(UpdateStore.Request request) {
-        if (isChangeStoreName(request.getStoreName())) {
-            this.storeName = request.getStoreName();
-        }
+    @Embedded
+    private Address address;
 
-        if (isChangeLocation(request.getLocation())) {
-            this.location = request.getLocation();
-        }
-    }
+    public Store calculateStarRating(int starRating) {
 
-    public Store calculateStarRating(int starRating){
-
-        if(this.reviews.size()==0){
+        if (this.reviews.size() == 0) {
             this.starRating = starRating * 1.0;
             return this;
         }
 
-        double updatedTotalStars = this.starRating * (this.reviews.size()-1) + starRating;
+        double updatedTotalStars = this.starRating * (this.reviews.size() - 1) + starRating;
         this.starRating = updatedTotalStars / this.reviews.size();
         return this;
     }

@@ -23,7 +23,9 @@ public class SecurityUser implements UserDetails{
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
-
+    public Long getId(){
+        return this.member.getMemberId();
+    }
     @Override
     public String getPassword() {
         return this.member.getPassword();
