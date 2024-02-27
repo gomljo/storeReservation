@@ -1,6 +1,7 @@
 package com.store.reservation.store.domain.model;
 
 import com.store.reservation.member.memberInfo.domain.MemberInformation;
+import com.store.reservation.member.memberInfo.model.BaseEntity;
 import com.store.reservation.store.domain.vo.food.Food;
 import com.store.reservation.store.domain.vo.location.Location;
 import com.store.reservation.store.domain.vo.operating.OperatingHours;
@@ -22,7 +23,7 @@ import java.util.Set;
 @Getter
 @Builder
 @Entity
-public class Store {
+public class Store extends BaseEntity {
 
     private static final Double INITIAL_STAR_RATING = 0.0;
     private static final Long INITIAL_REVIEW_COUNT = 0L;
