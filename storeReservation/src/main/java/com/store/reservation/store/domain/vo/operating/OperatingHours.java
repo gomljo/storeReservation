@@ -1,6 +1,6 @@
 package com.store.reservation.store.domain.vo.operating;
 
-import com.store.reservation.store.dto.create.StoreDto;
+import com.store.reservation.store.dto.common.TimeDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,11 +20,17 @@ import java.util.List;
 @Builder
 public class OperatingHours {
 
-    @Embedded
-    private BreakTime breakTime;
-
-    @Embedded
-    private BusinessHours businessHours;
+    private LocalTime startTime;
+    private LocalTime endTime;
+    private LocalTime openingHours;
+    private LocalTime closingHours;
+    public boolean isNotBreakTime(LocalTime currentTime) {
+        return startTime.isAfter(currentTime)
+                || endTime.isBefore(currentTime);
+    }
+    public boolean isBeforeThenClosing(LocalTime currentTime) {
+        return closingHours.isAfter(currentTime);
+    }
 
     @ElementCollection
     @Builder.Default
@@ -34,31 +40,24 @@ public class OperatingHours {
     public void defineReservationTimes() {
 
         this.reservationTimes = new ArrayList<>();
-        LocalTime current = businessHours.getOpeningHours();
-        while (businessHours.isBeforeThenClosing(current)) {
-            if (breakTime.isNotBreakTime(current)) {
+        LocalTime current = this.openingHours;
+        while (this.isBeforeThenClosing(current)) {
+            if (isNotBreakTime(current)) {
                 reservationTimes.add(current);
             }
             current = current.plusMinutes(this.reservationTimeInterval);
         }
 
     }
-    public List<LocalTime> get(){
-        return this.reservationTimes;
-    }
-    public static OperatingHours createBy(StoreDto storeDto) {
+
+    public static OperatingHours createBy(TimeDto timeDto) {
 
         return OperatingHours.builder()
-                .businessHours(BusinessHours
-                        .builder()
-                        .openingHours(storeDto.getOpeningHour())
-                        .closingHours(storeDto.getClosingHour())
-                        .build())
-                .breakTime(BreakTime.builder()
-                        .startTime(storeDto.getBreakTimeStart())
-                        .endTime(storeDto.getBreakTimeEnd())
-                        .build())
-                .reservationTimeInterval(storeDto.getReservationTimeInterval())
+                .openingHours(timeDto.getOpeningHour())
+                .closingHours(timeDto.getClosingHour())
+                .startTime(timeDto.getBreakTimeStart())
+                .endTime(timeDto.getBreakTimeEnd())
+                .reservationTimeInterval(timeDto.getReservationTimeInterval())
                 .build();
     }
 }
