@@ -1,11 +1,11 @@
 package com.store.reservation.member.service;
 
-import com.store.reservation.member.MemberInformationRepository;
-import com.store.reservation.member.memberInfo.domain.MemberInformation;
-import com.store.reservation.member.memberInfo.dto.SignInDto;
-import com.store.reservation.member.memberInfo.dto.SignUpDto;
-import com.store.reservation.member.memberInfo.exception.MemberException;
-import com.store.reservation.member.memberInfo.security.TokenProvider;
+import com.store.reservation.member.domain.MemberInformation;
+import com.store.reservation.member.dto.SignInDto;
+import com.store.reservation.member.dto.SignUpDto;
+import com.store.reservation.member.exception.MemberException;
+import com.store.reservation.member.repository.MemberInformationRepository;
+import com.store.reservation.member.security.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;

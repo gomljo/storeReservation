@@ -1,4 +1,4 @@
-package com.store.reservation.member.memberInfo.domain.type;
+package com.store.reservation.member.domain.type;
 
 public enum Role {
 

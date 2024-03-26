@@ -1,6 +1,6 @@
-package com.store.reservation.member;
+package com.store.reservation.member.repository;
 
-import com.store.reservation.member.memberInfo.domain.MemberInformation;
+import com.store.reservation.member.domain.MemberInformation;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,6 +1,6 @@
-package com.store.reservation.member.memberInfo.domain;
+package com.store.reservation.member.domain;
 
-import com.store.reservation.member.memberInfo.model.BaseEntity;
+import com.store.reservation.member.model.BaseEntity;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,4 +1,4 @@
-package com.store.reservation.member.memberInfo.dto;
+package com.store.reservation.member.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

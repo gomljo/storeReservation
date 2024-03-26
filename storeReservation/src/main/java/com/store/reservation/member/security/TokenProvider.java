@@ -1,4 +1,4 @@
-package com.store.reservation.member.memberInfo.security;
+package com.store.reservation.member.security;
 
 
 import io.jsonwebtoken.Claims;

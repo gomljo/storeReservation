@@ -1,8 +1,9 @@
-package com.store.reservation.member.memberInfo.security;
+package com.store.reservation.member.security;
 
-import com.store.reservation.member.MemberInformationRepository;
-import com.store.reservation.member.memberInfo.domain.MemberInformation;
-import com.store.reservation.member.memberInfo.model.SecurityUser;
+import com.store.reservation.member.domain.MemberInformation;
+
+import com.store.reservation.member.model.SecurityUser;
+import com.store.reservation.member.repository.MemberInformationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;

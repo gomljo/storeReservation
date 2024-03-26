@@ -1,10 +1,9 @@
 package com.store.reservation.member.controller;
 
-
-import com.store.reservation.member.memberInfo.domain.MemberInformation;
-import com.store.reservation.member.memberInfo.dto.SignInDto;
-import com.store.reservation.member.memberInfo.dto.SignUpDto;
-import com.store.reservation.member.memberInfo.security.TokenProvider;
+import com.store.reservation.member.domain.MemberInformation;
+import com.store.reservation.member.dto.SignInDto;
+import com.store.reservation.member.dto.SignUpDto;
+import com.store.reservation.member.security.TokenProvider;
 import com.store.reservation.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -36,8 +35,8 @@ public class MemberController {
                 this.tokenProvider.generateToken(
                         authenticatedMemberInformation.getEmail(),
                         authenticatedMemberInformation.getRoles().stream()
-                        .map(String::valueOf)
-                        .collect(Collectors.toList()))
+                                .map(String::valueOf)
+                                .collect(Collectors.toList()))
         );
 
     }

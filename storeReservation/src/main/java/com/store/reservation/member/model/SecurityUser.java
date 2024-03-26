@@ -1,6 +1,6 @@
-package com.store.reservation.member.memberInfo.model;
+package com.store.reservation.member.model;
 
-import com.store.reservation.member.memberInfo.domain.MemberInformation;
+import com.store.reservation.member.domain.MemberInformation;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

@@ -1,6 +1,6 @@
 package com.store.reservation.member.memberInfo.interceptor;
 
-import com.store.reservation.member.MemberInformationRepository;
+import com.store.reservation.member.repository.MemberInformationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
