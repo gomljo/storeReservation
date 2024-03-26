@@ -46,7 +46,8 @@ public class Store extends BaseEntity {
     private OperatingHours operatingHours;
     @Embedded
     private Location location;
-    private Long numberOfReservationPerTime;
+    @Builder.Default
+    private Long numberOfReservationPerTime=0L;
 
 
     public void addFoodList(Set<Food> newFoodList) {
