@@ -1,7 +1,7 @@
-package com.store.reservation.store.repository.command;
+package com.store.reservation.store.repository.jpa;
 
 
-import com.store.reservation.member.memberInfo.domain.MemberInformation;
+import com.store.reservation.member.domain.MemberInformation;
 import com.store.reservation.store.domain.model.Store;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -13,10 +13,11 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     Optional<Store> findByStoreName(String storeName);
 
-    Optional<Store> findById(long storeId);
 
-    boolean existsStoreByIdAndMemberInformation(Long storeId,
-                                                MemberInformation memberInformation);
+    boolean existsStoreByIdAndMemberInformation_Id(Long storeId,Long managerId);
     boolean existsStoreByMemberInformation(MemberInformation memberInformation);
+
+
     Optional<Store> findByMemberInformation(MemberInformation memberInformation);
+    Optional<Store> findByIdAndMemberInformation(Long storeId, MemberInformation memberInformation);
 }
