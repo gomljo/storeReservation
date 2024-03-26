@@ -1,4 +1,4 @@
-package com.store.reservation.store.dto.create;
+package com.store.reservation.store.dto.update;
 
 import com.store.reservation.store.domain.vo.food.Food;
 import com.store.reservation.store.dto.common.FoodDto;
@@ -12,20 +12,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
 @Builder
-public class CreateStoreDto {
+public class UpdateStoreDto {
     private String storeName;
     private String roadName;
     private TimeDto timeDto;
     private List<FoodDto> foodDtoList;
 
-    public Set<Food> getFoodListToSet(){
+    public Set<Food> getFoodListToSet() {
         return foodDtoList.stream()
                 .map(Food::from)
                 .collect(Collectors.toSet());
     }
-
 }
