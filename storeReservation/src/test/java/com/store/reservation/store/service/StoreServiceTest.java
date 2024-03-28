@@ -7,7 +7,7 @@ import com.store.reservation.store.domain.model.Store;
 import com.store.reservation.store.domain.vo.food.Food;
 import com.store.reservation.store.domain.vo.location.Location;
 import com.store.reservation.store.domain.vo.operating.OperatingHours;
-import com.store.reservation.store.dto.create.CreateStoreDto;
+import com.store.reservation.store.dto.common.StoreDto;
 import com.store.reservation.store.dto.update.UpdateStoreDto;
 import com.store.reservation.store.exception.StoreErrorCode;
 import com.store.reservation.store.exception.StoreException;
@@ -24,7 +24,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
@@ -33,6 +32,9 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 @ExtendWith(MockitoExtension.class)
 class StoreServiceTest {
     private static final MemberInformation VISITOR = null;
@@ -52,10 +54,10 @@ class StoreServiceTest {
         given(storeRepository.existsStoreByMemberInformation(any()))
                 .willReturn(true);
         MemberInformation managerInformation = getMemberInformation(Role.ROLE_PARTNER);
-        CreateStoreDto createStoreDto = CreateStoreDto.builder()
+        StoreDto storeDto = StoreDto.builder()
                 .storeName("이미 등록한 매장 정보 이름")
                 .build();
-        StoreException storeException = assertThrows(StoreException.class, ()->storeService.create(createStoreDto, managerInformation)) ;
+        StoreException storeException = assertThrows(StoreException.class, ()->storeService.create(storeDto, managerInformation)) ;
         assertEquals(StoreErrorCode.ALREADY_REGISTERED.toString(), storeException.getErrorCode());
     }
 
@@ -67,11 +69,11 @@ class StoreServiceTest {
         given(geoCoding.convertToCoordinateFrom(anyString()))
                 .willThrow(new LocalException(LocalErrorCode.CANNOT_GET_API_RESPONSE));
         MemberInformation memberInformation = getMemberInformation(Role.ROLE_PARTNER);
-        CreateStoreDto createStoreDto = CreateStoreDto.builder()
+        StoreDto storeDto = StoreDto.builder()
                 .storeName("이미 등록한 매장 정보 이름")
                 .roadName("워싱턴주 홀란드")
                 .build();
-        LocalException localException = assertThrows(LocalException.class, ()->storeService.create(createStoreDto, memberInformation)) ;
+        LocalException localException = assertThrows(LocalException.class, ()->storeService.create(storeDto, memberInformation)) ;
         assertEquals(LocalErrorCode.CANNOT_GET_API_RESPONSE.name(), localException.getErrorCode());
     }
 
@@ -80,7 +82,7 @@ class StoreServiceTest {
     void update_fail_when_not_my_store() {
         Long storeId = 2L;
         MemberInformation managerInformation = getMemberInformation(Role.ROLE_PARTNER);
-        UpdateStoreDto updateStoreDto = UpdateStoreDto.builder()
+        StoreDto updateStoreDto = StoreDto.builder()
                 .storeName("본인 것이 아닌 매장의 이름")
                 .roadName("경기도 성남시 분당구 판교역로 166")
                 .build();
@@ -106,14 +108,14 @@ class StoreServiceTest {
     void update_fail_when_enter_wrong_road_name() {
         Long storeId = 1L;
         MemberInformation memberInformation = getMemberInformation(Role.ROLE_PARTNER);
-        UpdateStoreDto createStoreDto = UpdateStoreDto.builder()
+        StoreDto storeDto = StoreDto.builder()
                 .storeName("이전에 등록한 매장 이름")
                 .roadName("워싱턴주 홀란드")
                 .build();
         given(geoCoding.convertToCoordinateFrom(anyString()))
                 .willThrow(new LocalException(LocalErrorCode.CANNOT_GET_API_RESPONSE));
 
-        LocalException localException = assertThrows(LocalException.class, ()->storeService.update(createStoreDto, storeId,memberInformation)) ;
+        LocalException localException = assertThrows(LocalException.class, ()->storeService.update(storeDto, storeId,memberInformation)) ;
         assertEquals(LocalErrorCode.CANNOT_GET_API_RESPONSE.name(), localException.getErrorCode());
     }
 
@@ -153,6 +155,7 @@ class StoreServiceTest {
                 .willReturn(Optional.of(expectedStore));
 
         Store actualStore = storeService.searchStoreByCustomer(storeId);
+        verify(storeRepository, times(1)).findById(anyLong());
 
         assertAll(
                 ()->assertEquals(actualStore.getId(), expectedStore.getId()),
