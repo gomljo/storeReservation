@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,18 +23,20 @@ public class OperatingHours {
     private LocalTime endTime;
     private LocalTime openingHours;
     private LocalTime closingHours;
-    public boolean isNotBreakTime(LocalTime currentTime) {
-        return startTime.isAfter(currentTime)
-                || endTime.isBefore(currentTime);
-    }
-    public boolean isBeforeThenClosing(LocalTime currentTime) {
-        return closingHours.isAfter(currentTime);
-    }
 
     @ElementCollection
     @Builder.Default
     private List<LocalTime> reservationTimes = new ArrayList<>();
     private Integer reservationTimeInterval;
+
+    private boolean isNotBreakTime(LocalTime currentTime) {
+        return startTime.isAfter(currentTime)
+                || endTime.isBefore(currentTime);
+    }
+
+    private boolean isBeforeThenClosing(LocalTime currentTime) {
+        return closingHours.isAfter(currentTime);
+    }
 
     public void defineReservationTimes() {
 

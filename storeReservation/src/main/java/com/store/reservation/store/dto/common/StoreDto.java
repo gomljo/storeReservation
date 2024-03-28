@@ -1,8 +1,6 @@
-package com.store.reservation.store.dto.create;
+package com.store.reservation.store.dto.common;
 
 import com.store.reservation.store.domain.vo.food.Food;
-import com.store.reservation.store.dto.common.FoodDto;
-import com.store.reservation.store.dto.common.TimeDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +14,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Getter
 @Builder
-public class CreateStoreDto {
+public class StoreDto {
     private String storeName;
     private String roadName;
     private TimeDto timeDto;

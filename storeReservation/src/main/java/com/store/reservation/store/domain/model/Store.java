@@ -6,6 +6,7 @@ import com.store.reservation.member.model.BaseEntity;
 import com.store.reservation.store.domain.vo.food.Food;
 import com.store.reservation.store.domain.vo.location.Location;
 import com.store.reservation.store.domain.vo.operating.OperatingHours;
+import com.store.reservation.store.dto.common.StoreDto;
 import com.store.reservation.store.dto.update.UpdateStoreDto;
 import com.store.reservation.store.util.implementation.kakao.dto.LocationDto;
 import com.sun.istack.NotNull;
@@ -55,7 +56,7 @@ public class Store extends BaseEntity {
     }
 
 
-    public void update(UpdateStoreDto storeDto, LocationDto locationDto) {
+    public void update(StoreDto storeDto, LocationDto locationDto) {
         this.storeName = storeDto.getStoreName();
         this.operatingHours = OperatingHours.createBy(storeDto.getTimeDto());
         this.operatingHours.defineReservationTimes();

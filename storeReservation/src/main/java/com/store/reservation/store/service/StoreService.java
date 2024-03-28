@@ -1,17 +1,18 @@
 package com.store.reservation.store.service;
 
 import com.store.reservation.member.domain.MemberInformation;
+import com.store.reservation.store.constant.SearchCondition;
 import com.store.reservation.store.domain.model.Store;
 import com.store.reservation.store.domain.vo.location.Location;
 import com.store.reservation.store.domain.vo.operating.OperatingHours;
-import com.store.reservation.store.dto.create.CreateStoreDto;
+import com.store.reservation.store.dto.common.StoreDto;
 import com.store.reservation.store.dto.search.request.SearchStoreDto;
-import com.store.reservation.store.dto.update.UpdateStoreDto;
 import com.store.reservation.store.exception.StoreErrorCode;
 import com.store.reservation.store.exception.StoreException;
 import com.store.reservation.store.repository.jpa.StoreRepository;
 import com.store.reservation.store.repository.queryDsl.StoreSearchRepository;
-import com.store.reservation.store.repository.queryDsl.dto.SimpleStore;
+import com.store.reservation.store.repository.queryDsl.dto.SearchDto;
+import com.store.reservation.store.dto.search.response.StoreDetailForCustomerDto;
 import com.store.reservation.store.util.GeoCoding;
 import com.store.reservation.store.util.implementation.kakao.dto.LocationDto;
 import lombok.RequiredArgsConstructor;
@@ -33,26 +34,26 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final StoreSearchRepository storeSearchRepository;
     private final GeoCoding geoCoding;
-    public void create(CreateStoreDto createStoreDto,
+    public void create(StoreDto storeDto,
                        MemberInformation memberInformation) {
         if (storeRepository.existsStoreByMemberInformation(memberInformation)) {
             throw new StoreException(ALREADY_REGISTERED);
         }
-        LocationDto locationDto = geoCoding.convertToCoordinateFrom(createStoreDto.getRoadName());
+        LocationDto locationDto = geoCoding.convertToCoordinateFrom(storeDto.getRoadName());
         Location location = Location.createBy(locationDto);
-        OperatingHours operatingHours = OperatingHours.createBy(createStoreDto.getTimeDto());
+        OperatingHours operatingHours = OperatingHours.createBy(storeDto.getTimeDto());
         operatingHours.defineReservationTimes();
 
         storeRepository.save(Store.builder()
-                .storeName(createStoreDto.getStoreName())
+                .storeName(storeDto.getStoreName())
                 .memberInformation(memberInformation)
                 .location(location)
                 .operatingHours(operatingHours)
-                .foods(createStoreDto.getFoodListToSet())
+                .foods(storeDto.getFoodListToSet())
                 .build());
     }
 
-    public void update(UpdateStoreDto storeDto, Long storeId,
+    public void update(StoreDto storeDto, Long storeId,
                        MemberInformation memberInformation) {
         LocationDto locationDto = geoCoding.convertToCoordinateFrom(storeDto.getRoadName());
         Store store = storeRepository.findByIdAndMemberInformation(storeId, memberInformation)
@@ -70,12 +71,15 @@ public class StoreService {
                 .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
     }
 
-    // todo
-    // 매장 탐색은 비회원이더라도 가능하다.
-    // 따라서 필요한 정보는 현재 위치, 반경과 검색 조건이다.
-    // 여기서 고려해야할 점은 현재 위치 주변도 가능하고 검색하고자 하는 지역이 될 수도 있다.
-    public Page<SimpleStore> searchStoreListBy(SearchStoreDto searchStoreDto, Pageable pageable) {
-        return storeSearchRepository.searchStoreByCondition(searchStoreDto, pageable).map(SimpleStore::from);
+    public Page<StoreDetailForCustomerDto> searchStoreListBy(SearchStoreDto searchStoreDto, SearchCondition searchCondition, Pageable pageable) {
+
+        return storeSearchRepository.searchStoreByCondition(SearchDto.builder()
+                        .latitude(searchStoreDto.getLatitude())
+                        .longitude(searchStoreDto.getLongitude())
+                        .radius(searchStoreDto.getRadius())
+                        .searchCondition(searchCondition)
+                        .pageable(pageable)
+                .build()).map(StoreDetailForCustomerDto::from);
     }
 
 }

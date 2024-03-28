@@ -1,4 +1,4 @@
-package com.store.reservation.store.repository.queryDsl.dto;
+package com.store.reservation.store.dto.search.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.store.reservation.store.domain.model.Store;
@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.domain.Page;
 
 import java.time.LocalTime;
 
@@ -14,7 +13,8 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @Getter
 @Builder
-public class SimpleStore {
+public class StoreDetailForCustomerDto {
+    private Long storeId;
     private String storeName;
     private String city;
     private String county;
@@ -31,8 +31,9 @@ public class SimpleStore {
     private LocalTime breakTimeEnd;
     private Long numberOfReviews;
 
-    public static SimpleStore from(Store store) {
-        return SimpleStore.builder()
+    public static StoreDetailForCustomerDto from(Store store) {
+        return StoreDetailForCustomerDto.builder()
+                .storeId(store.getId())
                 .storeName(store.getStoreName())
                 .city(store.getLocation().getCity())
                 .county(store.getLocation().getCounty())

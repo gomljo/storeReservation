@@ -3,12 +3,12 @@ package com.store.reservation.store.controller;
 import com.store.reservation.member.domain.MemberInformation;
 import com.store.reservation.member.model.SecurityUser;
 import com.store.reservation.member.service.MemberService;
+import com.store.reservation.store.constant.SearchCondition;
 import com.store.reservation.store.constant.StoreStatus;
-import com.store.reservation.store.dto.create.CreateStoreDto;
+import com.store.reservation.store.dto.common.StoreDto;
 import com.store.reservation.store.dto.search.request.SearchStoreDto;
-import com.store.reservation.store.dto.search.response.StoreDto;
-import com.store.reservation.store.dto.update.UpdateStoreDto;
-import com.store.reservation.store.repository.queryDsl.dto.SimpleStore;
+import com.store.reservation.store.dto.search.response.StoreDetailForCustomerDto;
+import com.store.reservation.store.dto.search.response.StoreDetailForManagerDto;
 import com.store.reservation.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,43 +29,44 @@ public class StoreController {
 
 
     @PostMapping
-    @PreAuthorize("hasRole('PARTNER')")
+    @PreAuthorize("hasRole('ROLE_PARTNER')")
     public ResponseEntity<StoreStatus> registerStore(
             @AuthenticationPrincipal SecurityUser securityUser,
-            @RequestBody CreateStoreDto createStoreDto) {
+            @RequestBody StoreDto storeDto) {
         MemberInformation memberInformation = memberService.searchBy(securityUser.getId());
-        storeService.create(createStoreDto, memberInformation);
+        storeService.create(storeDto, memberInformation);
         return ResponseEntity.ok(StoreStatus.CREATION_SUCCESS);
     }
 
     @PutMapping("/{storeId}")
-    @PreAuthorize("hasRole('PARTNER')")
+    @PreAuthorize("hasRole('ROLE_PARTNER')")
     public ResponseEntity<StoreStatus> updateStore(
             @AuthenticationPrincipal SecurityUser securityUser,
             @PathVariable Long storeId,
-            @RequestBody UpdateStoreDto storeDto) {
+            @RequestBody StoreDto storeDto) {
         MemberInformation memberInformation = memberService.searchBy(securityUser.getId());
         storeService.update(storeDto, storeId, memberInformation);
         return ResponseEntity.ok(StoreStatus.UPDATE_SUCCESS);
     }
 
-    @GetMapping("customer/{pageIndex}/{pageSize}")
-    public Page<SimpleStore> searchStoreBy(@RequestParam int pageIndex,
-                                           @RequestParam int pageSize,
-                                           @RequestBody SearchStoreDto searchStoreDto) {
-        return storeService.searchStoreListBy(searchStoreDto, PageRequest.of(pageSize, pageIndex));
+    @GetMapping("/customer/{pageIndex}/{pageSize}/{searchCondition}")
+    public Page<StoreDetailForCustomerDto> searchStoreBy(@PathVariable int pageIndex,
+                                                         @PathVariable int pageSize,
+                                                         @PathVariable SearchCondition searchCondition,
+                                                         @RequestBody SearchStoreDto searchStoreDto) {
+        return storeService.searchStoreListBy(searchStoreDto, searchCondition, PageRequest.of(pageSize, pageIndex));
     }
 
-    @GetMapping("manager/detail/{storeId}")
+    @GetMapping("/manager/detail/{storeId}")
     @PreAuthorize("hasRole('ROLE_PARTNER')")
-    public ResponseEntity<StoreDto> searchStoreByManager(@AuthenticationPrincipal SecurityUser securityUser,
-                                                @PathVariable Long storeId) {
+    public ResponseEntity<StoreDetailForManagerDto> searchStoreByManager(@AuthenticationPrincipal SecurityUser securityUser,
+                                                                          @PathVariable Long storeId) {
         MemberInformation memberInformation = memberService.searchBy(securityUser.getId());
-        return ResponseEntity.ok(StoreDto.from(storeService.searchStoreByOwner(memberInformation, storeId)));
+        return ResponseEntity.ok(StoreDetailForManagerDto.from(storeService.searchStoreByOwner(memberInformation, storeId)));
     }
 
-    @GetMapping("customer/detail/{storeId}")
-    public ResponseEntity<StoreDto> searchStoreByCustomer(@PathVariable Long storeId){
-        return ResponseEntity.ok(StoreDto.from(storeService.searchStoreByCustomer(storeId)));
+    @GetMapping("/customer/detail/{storeId}")
+    public ResponseEntity<StoreDetailForCustomerDto> searchStoreByCustomer(@PathVariable Long storeId){
+        return ResponseEntity.ok(StoreDetailForCustomerDto.from(storeService.searchStoreByCustomer(storeId)));
     }
 }

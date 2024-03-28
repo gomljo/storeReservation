@@ -7,16 +7,16 @@ import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.store.reservation.store.domain.model.Store;
-import com.store.reservation.store.dto.search.request.SearchStoreDto;
+import com.store.reservation.store.repository.queryDsl.dto.SearchDto;
 import com.store.reservation.store.repository.queryDsl.nativeSql.NativeSqlCreator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Objects;
+
 import static com.store.reservation.store.domain.model.QStore.store;
 
 @Repository
@@ -25,25 +25,23 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepository {
     private final JPAQueryFactory jpaQueryFactory;
     private final NativeSqlCreator mysqlNativeSQLCreator;
 
-    // TODO: 2024-02-26
-    // predicate 객체를 switch case 구문으로 리턴하도록 변경
-    public Page<Store> searchStoreByCondition(SearchStoreDto searchStoreDto, Pageable pageable) {
+    public Page<Store> searchStoreByCondition(SearchDto searchDto) {
         // search type 별 팩토리 패턴을 써서 order by를 건다.
-        OrderSpecifier<?> sorting = getSortOptions(searchStoreDto);
+        OrderSpecifier<?> sorting = getSortOptions(searchDto);
         List<Store> storeEntityInRadiusList = jpaQueryFactory
                 .select(Projections.bean(Store.class))
                 .from(store)
-                .where(isStoreInRadius(searchStoreDto))
+                .where(isStoreInRadius(searchDto))
                 .orderBy(sorting)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize() + 1)
+                .offset(searchDto.getPageable().getOffset())
+                .limit(searchDto.getPageable().getPageSize() + 1)
                 .fetch();
 
         Long count = jpaQueryFactory.select(Wildcard.count)
                 .from(store)
                 .fetchFirst();
 
-        return new PageImpl<>(storeEntityInRadiusList, pageable, count);
+        return new PageImpl<>(storeEntityInRadiusList, searchDto.getPageable(), count);
     }
 
     @Override
@@ -56,40 +54,41 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepository {
         return !Objects.isNull(fetchResult);
     }
 
-    private BooleanExpression isStoreInRadius(SearchStoreDto searchStoreDto) {
-        if (Objects.isNull(searchStoreDto)) {
+    private BooleanExpression isStoreInRadius(SearchDto searchDto) {
+        if (Objects.isNull(searchDto)) {
             throw new NullPointerException("조회할 위치 정보가 없습니다.");
         }
-        return getCalcDistanceNativeSQL(searchStoreDto)
-                .loe(searchStoreDto.getRadius());
+        return getCalcDistanceNativeSQL(searchDto)
+                .loe(searchDto.getRadius());
     }
 
-    private NumberExpression<Double> getCalcDistanceNativeSQL(SearchStoreDto searchStoreDto) {
+    private NumberExpression<Double> getCalcDistanceNativeSQL(SearchDto searchDto) {
         return mysqlNativeSQLCreator.createNativeRadiusQuery(
-                searchStoreDto.getLongitude(), searchStoreDto.getLatitude(),
+                searchDto.getLongitude(), searchDto.getLatitude(),
                 store.location.lnt, store.location.lat
         );
     }
 
-    private OrderSpecifier<Double> distanceAsc(SearchStoreDto searchStoreDto) {
-        return getCalcDistanceNativeSQL(searchStoreDto).asc();
+    private OrderSpecifier<Double> distanceAsc(SearchDto searchDto) {
+        return getCalcDistanceNativeSQL(searchDto).asc();
     }
 
     private OrderSpecifier<Double> starRatingDesc() {
         return store.starRating.desc();
     }
-    private OrderSpecifier<Long> numberOfReviewsDesc(){
+
+    private OrderSpecifier<Long> numberOfReviewsDesc() {
         return store.numberOfReviews.desc();
     }
 
-    private OrderSpecifier<?> getSortOptions(SearchStoreDto searchStoreDto) {
-        switch (searchStoreDto.getSearchCondition()) {
+    private OrderSpecifier<?> getSortOptions(SearchDto searchDto) {
+        switch (searchDto.getSearchCondition()) {
             case RATING:
                 return starRatingDesc();
             case REVIEW:
                 return numberOfReviewsDesc();
 
         }
-        return distanceAsc(searchStoreDto);
+        return distanceAsc(searchDto);
     }
 }
