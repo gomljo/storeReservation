@@ -2,7 +2,7 @@ package com.store.reservation.review.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.store.reservation.member.model.BaseEntity;
-import com.store.reservation.store.store.domain.model.Store;
+import com.store.reservation.store.domain.model.Store;
 import lombok.*;
 
 import javax.persistence.*;

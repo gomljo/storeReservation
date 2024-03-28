@@ -1,4 +1,4 @@
-package com.store.reservation.reservation.reservation.exception;
+package com.store.reservation.reservation.exception;
 
 import com.store.reservation.exception.CustomException;
 

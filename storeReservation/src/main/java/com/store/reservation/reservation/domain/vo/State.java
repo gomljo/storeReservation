@@ -1,8 +1,8 @@
-package com.store.reservation.reservation.reservation.domain.vo;
+package com.store.reservation.reservation.domain.vo;
 
-import com.store.reservation.reservation.reservation.domain.model.type.ApprovalState;
-import com.store.reservation.reservation.reservation.domain.model.type.ArrivalState;
-import com.store.reservation.reservation.reservation.domain.model.type.ReservationState;
+import com.store.reservation.reservation.domain.model.type.ApprovalState;
+import com.store.reservation.reservation.domain.model.type.ArrivalState;
+import com.store.reservation.reservation.domain.model.type.ReservationState;
 import lombok.Getter;
 
 import javax.persistence.Embeddable;

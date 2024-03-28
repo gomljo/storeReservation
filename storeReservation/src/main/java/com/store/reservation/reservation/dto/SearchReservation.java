@@ -1,6 +1,7 @@
-package com.store.reservation.reservation.reservation.dto;
+package com.store.reservation.reservation.dto;
 
-import com.store.reservation.reservation.reservation.domain.model.Reservation;
+
+import com.store.reservation.reservation.domain.model.Reservation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

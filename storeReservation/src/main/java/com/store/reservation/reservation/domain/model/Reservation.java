@@ -1,14 +1,14 @@
-package com.store.reservation.reservation.reservation.domain.model;
+package com.store.reservation.reservation.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.store.reservation.member.memberInfo.domain.MemberInformation;
-import com.store.reservation.member.memberInfo.model.BaseEntity;
-import com.store.reservation.reservation.reservation.domain.model.type.ApprovalState;
-import com.store.reservation.reservation.reservation.domain.model.type.ArrivalState;
-import com.store.reservation.reservation.reservation.domain.vo.State;
-import com.store.reservation.reservation.reservation.domain.vo.Time;
-import com.store.reservation.reservation.reservation.exception.ReservationError;
-import com.store.reservation.reservation.reservation.exception.ReservationException;
+import com.store.reservation.member.domain.MemberInformation;
+import com.store.reservation.member.model.BaseEntity;
+import com.store.reservation.reservation.domain.model.type.ApprovalState;
+import com.store.reservation.reservation.domain.model.type.ArrivalState;
+import com.store.reservation.reservation.domain.vo.State;
+import com.store.reservation.reservation.domain.vo.Time;
+import com.store.reservation.reservation.exception.ReservationError;
+import com.store.reservation.reservation.exception.ReservationException;
 import com.store.reservation.store.domain.model.Store;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,7 +1,7 @@
-package com.store.reservation.reservation.reservation.dto;
+package com.store.reservation.reservation.dto;
 
-import com.store.reservation.reservation.reservation.domain.model.Reservation;
-import com.store.reservation.reservation.reservation.domain.model.type.ApprovalState;
+import com.store.reservation.reservation.domain.model.Reservation;
+import com.store.reservation.reservation.domain.model.type.ApprovalState;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.store.reservation.reservation.reservation.domain.model.type;
+package com.store.reservation.reservation.domain.model.type;
 
 public enum ApprovalState {
 

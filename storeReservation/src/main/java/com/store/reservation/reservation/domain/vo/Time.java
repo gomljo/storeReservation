@@ -1,4 +1,4 @@
-package com.store.reservation.reservation.reservation.domain.vo;
+package com.store.reservation.reservation.domain.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
