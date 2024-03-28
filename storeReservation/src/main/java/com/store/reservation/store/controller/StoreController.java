@@ -28,7 +28,7 @@ public class StoreController {
     private final MemberService memberService;
 
 
-    @PostMapping("/register")
+    @PostMapping
     @PreAuthorize("hasRole('PARTNER')")
     public ResponseEntity<StoreStatus> registerStore(
             @AuthenticationPrincipal SecurityUser securityUser,
@@ -38,7 +38,7 @@ public class StoreController {
         return ResponseEntity.ok(StoreStatus.CREATION_SUCCESS);
     }
 
-    @PutMapping("/update/{storeId}")
+    @PutMapping("/{storeId}")
     @PreAuthorize("hasRole('PARTNER')")
     public ResponseEntity<StoreStatus> updateStore(
             @AuthenticationPrincipal SecurityUser securityUser,
@@ -49,14 +49,14 @@ public class StoreController {
         return ResponseEntity.ok(StoreStatus.UPDATE_SUCCESS);
     }
 
-    @GetMapping("/search/{pageIndex}/{pageSize}")
+    @GetMapping("customer/{pageIndex}/{pageSize}")
     public Page<SimpleStore> searchStoreBy(@RequestParam int pageIndex,
                                            @RequestParam int pageSize,
                                            @RequestBody SearchStoreDto searchStoreDto) {
         return storeService.searchStoreListBy(searchStoreDto, PageRequest.of(pageSize, pageIndex));
     }
 
-    @GetMapping("/search/manager/detail/{storeId}")
+    @GetMapping("manager/detail/{storeId}")
     @PreAuthorize("hasRole('ROLE_PARTNER')")
     public ResponseEntity<StoreDto> searchStoreByManager(@AuthenticationPrincipal SecurityUser securityUser,
                                                 @PathVariable Long storeId) {
@@ -64,7 +64,7 @@ public class StoreController {
         return ResponseEntity.ok(StoreDto.from(storeService.searchStoreByOwner(memberInformation, storeId)));
     }
 
-    @GetMapping("/search/customer/detail/{storeId}")
+    @GetMapping("customer/detail/{storeId}")
     public ResponseEntity<StoreDto> searchStoreByCustomer(@PathVariable Long storeId){
         return ResponseEntity.ok(StoreDto.from(storeService.searchStoreByCustomer(storeId)));
     }

@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/store/search/customer/**")
+                .antMatchers("/store/customer/**")
                 .permitAll()
                 .and()
                 .addFilterBefore(
