@@ -1,14 +1,14 @@
 package com.store.reservation.member.service;
 
-import com.store.reservation.member.domain.Member;
-import com.store.reservation.member.dto.SignIn;
-import com.store.reservation.member.dto.SignUp;
-import org.springframework.security.core.userdetails.UserDetailsService;
+
+import com.store.reservation.member.domain.MemberInformation;
+import com.store.reservation.member.dto.SignInDto;
+import com.store.reservation.member.dto.SignUpDto;
 
 public interface MemberService {
 
-    Member register(SignUp.Request user);
-    Member authenticate(SignIn.Request member);
-    Member searchBy(long memberId);
+    void register(SignUpDto user);
+    MemberInformation authenticate(SignInDto.Request member);
+    MemberInformation searchBy(long memberId);
 
 }

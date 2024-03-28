@@ -1,8 +1,9 @@
 package com.store.reservation.member.security;
 
-import com.store.reservation.member.domain.Member;
+import com.store.reservation.member.domain.MemberInformation;
+
 import com.store.reservation.member.model.SecurityUser;
-import com.store.reservation.member.repository.MemberRepository;
+import com.store.reservation.member.repository.MemberInformationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomUserDetailService implements UserDetailsService {
 
-    private final MemberRepository memberRepository;
+    private final MemberInformationRepository memberInformationRepository;
 
     /**
      * 함수 설명:
@@ -29,9 +30,9 @@ public class CustomUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         log.info("이메일로 회원 조회 시작");
-        Member member = memberRepository.findByEmail(email)
+        MemberInformation memberInformation = memberInformationRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(email));
         log.info("이메일로 회원 조회 정상 완료");
-        return new SecurityUser(member);
+        return new SecurityUser(memberInformation);
     }
 }

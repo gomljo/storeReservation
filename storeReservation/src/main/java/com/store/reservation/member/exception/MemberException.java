@@ -7,7 +7,7 @@ public class MemberException extends CustomException {
     private final MemberError errorCode;
     private final String errorMessage;
 
-    public MemberException(MemberError errorCode){
+    public MemberException(MemberError errorCode) {
         this.errorCode = errorCode;
         this.errorMessage = errorCode.getDescription();
     }

@@ -1,6 +1,6 @@
 package com.store.reservation.member.model;
 
-import com.store.reservation.member.domain.Member;
+import com.store.reservation.member.domain.MemberInformation;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,23 +15,25 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SecurityUser implements UserDetails{
 
-    private final Member member;
+    private final MemberInformation memberInformation;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.member.getRoles().stream()
+        return this.memberInformation.getRoles().stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
-
+    public Long getId(){
+        return this.memberInformation.getId();
+    }
     @Override
     public String getPassword() {
-        return this.member.getPassword();
+        return this.memberInformation.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return this.member.getName();
+        return this.memberInformation.getName();
     }
 
     @Override
