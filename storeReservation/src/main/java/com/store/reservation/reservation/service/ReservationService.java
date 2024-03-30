@@ -1,8 +1,8 @@
 package com.store.reservation.reservation.service;
 
 import com.store.reservation.reservation.domain.model.Reservation;
-import com.store.reservation.reservation.domain.model.type.ArrivalState;
-import com.store.reservation.reservation.domain.model.type.ReservationState;
+import com.store.reservation.reservation.constants.state.ArrivalState;
+import com.store.reservation.reservation.constants.state.ReservationState;
 import com.store.reservation.reservation.exception.ReservationError;
 import com.store.reservation.reservation.exception.ReservationException;
 import com.store.reservation.reservation.respository.jpa.ReservationRepository;

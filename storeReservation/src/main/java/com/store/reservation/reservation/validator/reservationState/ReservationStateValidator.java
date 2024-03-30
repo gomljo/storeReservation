@@ -1,6 +1,6 @@
 package com.store.reservation.reservation.validator.reservationState;
 
-import com.store.reservation.reservation.domain.model.type.ReservationState;
+import com.store.reservation.reservation.constants.state.ReservationState;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
