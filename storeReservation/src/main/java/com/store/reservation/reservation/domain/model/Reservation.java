@@ -3,12 +3,10 @@ package com.store.reservation.reservation.domain.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.store.reservation.member.domain.MemberInformation;
 import com.store.reservation.member.model.BaseEntity;
-import com.store.reservation.reservation.domain.model.type.ApprovalState;
-import com.store.reservation.reservation.domain.model.type.ArrivalState;
+import com.store.reservation.reservation.constants.state.ArrivalState;
+import com.store.reservation.reservation.constants.state.ReservationState;
 import com.store.reservation.reservation.domain.vo.State;
 import com.store.reservation.reservation.domain.vo.Time;
-import com.store.reservation.reservation.exception.ReservationError;
-import com.store.reservation.reservation.exception.ReservationException;
 import com.store.reservation.store.domain.model.Store;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,9 +26,10 @@ public class Reservation extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reservation_id")
-    private long reservationId;
+    private long id;
 
-    @OneToOne
+    @JsonBackReference
+    @ManyToOne
     @JoinColumn(name = "member_information_id")
     private MemberInformation customer;
 
@@ -44,31 +43,13 @@ public class Reservation extends BaseEntity {
 
     @Embedded
     private Time time;
+    private int numberOfPeople;
 
-    public LocalDateTime getReservationTime() {
-        return time.getTime();
-    }
-
-    public String getReservedStoreName() {
-        return store.getStoreName();
-    }
-
-    public String getReservedState() {
-        return state.getReservationState().toString();
-    }
-
-    public void updateApprovalState(ApprovalState updatedApprovalState) {
-        if (!this.state.isChangedApprovalState(updatedApprovalState)) {
-            throw new ReservationException(ReservationError.APPROVAL_STATE_NOT_CHANGED);
-        }
-        this.state.changeApprovalState(updatedApprovalState);
+    public void updateReservationState(ReservationState reservationState) {
+        this.state.changeReservationState(reservationState);
     }
 
     public void updateArrivalState(ArrivalState updatedArrivalState) {
-        if (!this.state.isArrived(updatedArrivalState)) {
-            throw new ReservationException(ReservationError.INVALID_ARRIVAL_STATE_UPDATE);
-        }
         this.state.changeArrivalState(updatedArrivalState);
-        this.state.changeReservationStateToReserved();
     }
 }

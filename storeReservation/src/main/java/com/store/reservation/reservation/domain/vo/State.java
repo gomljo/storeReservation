@@ -1,47 +1,32 @@
 package com.store.reservation.reservation.domain.vo;
 
-import com.store.reservation.reservation.domain.model.type.ApprovalState;
-import com.store.reservation.reservation.domain.model.type.ArrivalState;
-import com.store.reservation.reservation.domain.model.type.ReservationState;
+import com.store.reservation.reservation.constants.state.ArrivalState;
+import com.store.reservation.reservation.constants.state.ReservationState;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 
 @Embeddable
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class State {
 
-    private ReservationState reservationState;
-
-    private ApprovalState approvalState;
-
-    private ArrivalState arrivalState;
-
-    public State() {
-        this.reservationState = ReservationState.READY;
-        this.approvalState = ApprovalState.READY;
-        this.arrivalState = ArrivalState.READY;
-    }
-
-    public boolean isChangedApprovalState(ApprovalState approvalState) {
-
-        return this.approvalState != approvalState;
-    }
-
-    public void changeApprovalState(ApprovalState approvalState) {
-        this.approvalState = approvalState;
-    }
-
-    public boolean isArrived(ArrivalState arrivalState) {
-        return arrivalState == ArrivalState.ARRIVED;
-    }
+    @Builder.Default
+    private ReservationState reservationState = ReservationState.READY;
+    @Builder.Default
+    private ArrivalState arrivalState = ArrivalState.READY;
 
     public void changeArrivalState(ArrivalState arrivalState) {
         this.arrivalState = arrivalState;
     }
 
-    public void changeReservationStateToReserved() {
-        this.reservationState = ReservationState.RESERVED;
+    public void changeReservationState(ReservationState reservationState) {
+        this.reservationState = reservationState;
     }
 
 }

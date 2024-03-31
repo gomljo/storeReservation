@@ -14,31 +14,12 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Builder
 public class Time {
 
     private LocalDate reservedDate;
     private LocalTime reservedTime;
 
-    @Builder
-    public Time(LocalDateTime reservedTime){
-        this.reservedDate = parseDateFrom(reservedTime);
-        this.reservedTime =  parseTimeFrom(reservedTime);
-    }
-
-
-    private LocalDate parseDateFrom(LocalDateTime reservedTime){
-        return LocalDate.of(
-                reservedTime.getYear(),
-                reservedTime.getMonth(),
-                reservedTime.getDayOfMonth());
-    }
-
-    private LocalTime parseTimeFrom(LocalDateTime reservedTime){
-        return LocalTime.of(
-                reservedTime.getHour(),
-                reservedTime.getMinute(),
-                reservedTime.getSecond());
-    }
     public LocalDateTime getTime(){
         return LocalDateTime.of(this.reservedDate, this.reservedTime);
     }
