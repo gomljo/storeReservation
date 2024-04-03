@@ -1,13 +1,13 @@
-package com.store.reservation.reservation.exception;
+package com.store.reservation.reservation.exception.reservation;
 
-import com.store.reservation.exception.CustomException;
+import com.store.reservation.exception.CustomRuntimeException;
 
-public class ReservationException extends CustomException {
+public class ReservationRuntimeException extends CustomRuntimeException {
 
     private final ReservationError reservationError;
     private final String description;
 
-    public ReservationException(ReservationError reservationError) {
+    public ReservationRuntimeException(ReservationError reservationError) {
         this.reservationError = reservationError;
         this.description = reservationError.getDescription();
     }

@@ -1,4 +1,4 @@
-package com.store.reservation.reservation.validator.arrivalState;
+package com.store.reservation.reservation.validator.sortOption;
 
 import javax.validation.Constraint;
 import java.lang.annotation.ElementType;
@@ -8,7 +8,8 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = ArrivalStateValidator.class)
-public @interface ArrivalStateCheck {
-    String message() default "도착 상태 값이 올바르지 않습니다";
+@Constraint(validatedBy = SortOptionValidator.class)
+public @interface SortOptionCheck {
+    String message() default "정렬 조건이 올바르지 않습니다.";
+
 }

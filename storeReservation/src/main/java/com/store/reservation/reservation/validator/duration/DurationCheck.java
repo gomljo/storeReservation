@@ -1,4 +1,4 @@
-package com.store.reservation.reservation.validator.arrivalState;
+package com.store.reservation.reservation.validator.duration;
 
 import javax.validation.Constraint;
 import java.lang.annotation.ElementType;
@@ -8,7 +8,9 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = ArrivalStateValidator.class)
-public @interface ArrivalStateCheck {
-    String message() default "도착 상태 값이 올바르지 않습니다";
+@Constraint(validatedBy = DurationValidator.class)
+public @interface DurationCheck {
+    String message() default "기간 값이 유효하지 않습니다.";
+
 }
+
