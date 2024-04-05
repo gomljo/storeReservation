@@ -3,7 +3,7 @@ package com.store.reservation.member.service;
 import com.store.reservation.member.domain.MemberInformation;
 import com.store.reservation.member.dto.SignInDto;
 import com.store.reservation.member.dto.SignUpDto;
-import com.store.reservation.member.exception.MemberException;
+import com.store.reservation.member.exception.MemberRuntimeException;
 import com.store.reservation.member.repository.MemberInformationRepository;
 import com.store.reservation.member.security.TokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.store.reservation.member.exception.MemberError.*;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
@@ -28,7 +27,7 @@ public class MemberServiceImpl implements MemberService {
     public void register(SignUpDto signUpDto) {
 
         if (memberInformationRepository.existsByEmail(signUpDto.getEmail())) {
-            throw new MemberException(ALREADY_JOINED_CUSTOMER);
+            throw new MemberRuntimeException(ALREADY_JOINED_CUSTOMER);
         }
 
         String encodedPassword = this.passwordEncoder.encode(signUpDto.getPassword());
@@ -43,18 +42,18 @@ public class MemberServiceImpl implements MemberService {
 
     public MemberInformation authenticate(SignInDto.Request request) {
         MemberInformation memberInformation = memberInformationRepository.findByEmail(
-                request.getEmail()).orElseThrow(() -> new MemberException(NO_SUCH_MEMBER));
+                request.getEmail()).orElseThrow(() -> new MemberRuntimeException(NO_SUCH_MEMBER));
         if (!this.passwordEncoder.matches(request.getPassword(), memberInformation.getPassword())) {
-            throw new MemberException(PASSWORD_NOT_MATCH);
+            throw new MemberRuntimeException(PASSWORD_NOT_MATCH);
         }
         return memberInformation;
     }
 
     public SignInDto.Response signIn(SignInDto.Request signInRequest) {
         MemberInformation memberInformation = memberInformationRepository.findByEmail(signInRequest.getEmail())
-                .orElseThrow(() -> new MemberException(NO_SUCH_MEMBER));
+                .orElseThrow(() -> new MemberRuntimeException(NO_SUCH_MEMBER));
         if (!this.passwordEncoder.matches(memberInformation.getPassword(), this.passwordEncoder.encode(signInRequest.getPassword()))) {
-            throw new MemberException(PASSWORD_NOT_MATCH);
+            throw new MemberRuntimeException(PASSWORD_NOT_MATCH);
         }
         String accessToken = this.tokenProvider.generateToken(memberInformation.getEmail(), memberInformation.getRoles());
         return SignInDto.Response.from(memberInformation.getId(), accessToken);
@@ -62,9 +61,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberInformation searchBy(long memberId) {
-        log.info("");
         return memberInformationRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(NO_SUCH_MEMBER));
+                .orElseThrow(() -> new MemberRuntimeException(NO_SUCH_MEMBER));
     }
 
 }
