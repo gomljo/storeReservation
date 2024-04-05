@@ -6,6 +6,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
@@ -71,6 +72,7 @@ public class SwaggerConfig {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.OAS_30)
+                .ignoredParameterTypes(AuthenticationPrincipal.class)
                 .directModelSubstitute(LocalDateTime.class, String.class)
                 .directModelSubstitute(LocalDate.class, String.class)
                 .directModelSubstitute(LocalTime.class, String.class)
