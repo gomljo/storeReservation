@@ -7,7 +7,6 @@ import com.store.reservation.store.domain.vo.food.Food;
 import com.store.reservation.store.domain.vo.location.Location;
 import com.store.reservation.store.domain.vo.operating.OperatingHours;
 import com.store.reservation.store.dto.common.StoreDto;
-import com.store.reservation.store.dto.update.UpdateStoreDto;
 import com.store.reservation.store.util.implementation.kakao.dto.LocationDto;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
@@ -16,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -47,24 +47,27 @@ public class Store extends BaseEntity {
     private OperatingHours operatingHours;
     @Embedded
     private Location location;
-    @Builder.Default
-    private Long numberOfReservationPerTime=0L;
+    private Integer numberOfReservationPerTime;
 
 
     public void addFoodList(Set<Food> newFoodList) {
         this.foods.addAll(newFoodList);
     }
 
-
     public void update(StoreDto storeDto, LocationDto locationDto) {
         this.storeName = storeDto.getStoreName();
         this.operatingHours = OperatingHours.createBy(storeDto.getTimeDto());
         this.operatingHours.defineReservationTimes();
         this.location = Location.createBy(locationDto);
+        this.numberOfReservationPerTime = storeDto.getNumberOfPeoplePerTime();
         addFoodList(storeDto.getFoodListToSet());
     }
 
-    public boolean isPossibleToReserve(Long numberOfCurrentReservation){
+    public boolean isPossibleToReserve(int numberOfCurrentReservation) {
         return this.numberOfReservationPerTime > numberOfCurrentReservation;
+    }
+
+    public boolean isCorrectReservationTime(LocalTime reservationTime) {
+        return this.operatingHours.getReservationTimes().contains(reservationTime);
     }
 }
