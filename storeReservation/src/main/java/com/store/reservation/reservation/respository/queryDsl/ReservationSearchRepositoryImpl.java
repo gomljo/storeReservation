@@ -1,10 +1,10 @@
 package com.store.reservation.reservation.respository.queryDsl;
 
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.DateTemplate;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.store.reservation.reservation.constants.search.Duration;
 import com.store.reservation.reservation.constants.search.SortOption;
@@ -13,8 +13,10 @@ import com.store.reservation.reservation.domain.model.Reservation;
 import com.store.reservation.reservation.dto.ReservationSearchDto;
 import com.store.reservation.reservation.dto.common.ReservationTimeDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -23,7 +25,7 @@ import java.util.List;
 import static com.store.reservation.reservation.constants.search.Duration.*;
 import static com.store.reservation.reservation.domain.model.QReservation.reservation;
 
-
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class ReservationSearchRepositoryImpl implements ReservationSearchRepository {
@@ -99,25 +101,28 @@ public class ReservationSearchRepositoryImpl implements ReservationSearchReposit
         return new PageImpl<>(reservationList, reservationSearchDto.getPageable(), count);
     }
 
-    private BooleanExpression durationFilter(LocalDate standard, Duration duration) {
-        BooleanExpression isLoeEndDate = reservation.time.reservedDate.loe(convertToDateFormat(standard));
-        switch (duration) {
+    @Override
+    public Page<Reservation> findReservationListByStoreAndDateAndTime(Long storeId, ReservationTimeDto reservationTimeDto,
+                                                                      Pageable pageable) {
 
-            case THIS_WEEK:
-                return Expressions.allOf(
-                        isLoeEndDate,
-                        reservation.time.reservedDate.goe(convertToDateFormat(standard.minusDays(THIS_WEEK.getHowManyPast()))));
-            case ONE_MONTH:
-                return Expressions.allOf(
-                        isLoeEndDate,
-                        reservation.time.reservedDate.goe(convertToDateFormat(standard.minusMonths(ONE_MONTH.getHowManyPast()))));
-            case THREE_MONTH:
-                return Expressions.allOf(
-                        isLoeEndDate,
-                        reservation.time.reservedDate.goe(convertToDateFormat(standard.minusMonths(THREE_MONTH.getHowManyPast()))));
-
-        }
-        return isLoeEndDate;
+        List<Reservation> reservationList = jpaQueryFactory
+                .selectFrom(reservation)
+                .where(reservation.store.id.eq(storeId)
+                        .and(reservation.time.reservedDate.eq(reservationTimeDto.getReservationDate())
+                                .and(reservation.time.reservedTime.eq(reservationTimeDto.getReservationTime()))))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1)
+                .fetch();
+        Long count = jpaQueryFactory
+                .select(Wildcard.count)
+                .from(reservation)
+                .where(reservation.store.id.eq(storeId)
+                        .and(reservation.time.reservedDate.eq(reservationTimeDto.getReservationDate())
+                                .and(reservation.time.reservedTime.eq(reservationTimeDto.getReservationTime()))))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1)
+                .fetchFirst();
+        return new PageImpl<>(reservationList, pageable, count);
     }
 
     private BooleanExpression durationSelector(LocalDate standard, Duration duration) {
