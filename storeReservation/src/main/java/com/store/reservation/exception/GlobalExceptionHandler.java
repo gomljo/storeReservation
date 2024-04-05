@@ -20,13 +20,13 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(CustomException.class)
-    public ErrorResponse handleCustomException(CustomException customException){
-        log.error("사용자 정의 에러 발생", customException);
+    @ExceptionHandler(CustomRuntimeException.class)
+    public ErrorResponse handleCustomException(CustomRuntimeException customRuntimeException){
+        log.error("사용자 정의 에러 발생", customRuntimeException);
 
         return new ErrorResponse(
-                customException.getErrorCode(),
-                customException.getDescription()
+                customRuntimeException.getErrorCode(),
+                customRuntimeException.getDescription()
         );
     }
 }

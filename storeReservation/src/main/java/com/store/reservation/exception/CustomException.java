@@ -1,7 +1,9 @@
 package com.store.reservation.exception;
 
-public abstract class CustomException extends RuntimeException{
+public abstract class CustomException extends Exception{
 
-    protected abstract String getDescription();
-    protected abstract String getErrorCode();
+    private Enum<?> errorCode;
+    public abstract String getDescription();
+    public abstract String getErrorCode();
+
 }
