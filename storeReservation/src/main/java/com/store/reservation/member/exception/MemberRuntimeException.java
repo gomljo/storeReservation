@@ -1,13 +1,13 @@
 package com.store.reservation.member.exception;
 
-import com.store.reservation.exception.CustomException;
+import com.store.reservation.exception.CustomRuntimeException;
 
-public class MemberException extends CustomException {
+public class MemberRuntimeException extends CustomRuntimeException {
 
     private final MemberError errorCode;
     private final String errorMessage;
 
-    public MemberException(MemberError errorCode) {
+    public MemberRuntimeException(MemberError errorCode) {
         this.errorCode = errorCode;
         this.errorMessage = errorCode.getDescription();
     }
