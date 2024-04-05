@@ -10,9 +10,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = ReservationStateValidator.class)
 public @interface ReservationStateCheck {
-    String message() default "잘못된 휴대폰 번호입니다.";
+    String message() default "예약 상태 값이 올바르지 않습니다.";
 
-    Class[] groups() default {};
-
-    Class[] payload() default {};
 }

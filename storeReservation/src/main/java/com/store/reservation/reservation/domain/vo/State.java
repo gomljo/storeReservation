@@ -15,7 +15,6 @@ import javax.persistence.Embeddable;
 @AllArgsConstructor
 @Builder
 public class State {
-
     @Builder.Default
     private ReservationState reservationState = ReservationState.READY;
     @Builder.Default

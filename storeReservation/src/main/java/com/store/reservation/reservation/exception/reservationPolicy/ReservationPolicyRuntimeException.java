@@ -1,0 +1,18 @@
+package com.store.reservation.reservation.exception.reservationPolicy;
+
+import com.store.reservation.exception.CustomRuntimeException;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+public class ReservationPolicyRuntimeException extends CustomRuntimeException {
+    private final ReservationPolicyError reservationPolicyError;
+    @Override
+    protected String getDescription() {
+        return reservationPolicyError.getDescription();
+    }
+
+    @Override
+    protected String getErrorCode() {
+        return reservationPolicyError.name();
+    }
+}
