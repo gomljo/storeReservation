@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import static com.store.reservation.reservation.constants.state.ReservationState.APPROVAL;
@@ -45,7 +46,7 @@ public class ReservationService {
 
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ReservationRuntimeException(NO_SUCH_RESERVATION));
-        ReservationPolicy reservationPolicy = new ReservationPolicy(LocalDate.now(), LocalTime.now());
+        ReservationPolicy reservationPolicy = new ReservationPolicy(LocalDateTime.now());
         if (!reservationPolicy.isValidReservationTime(0, reservation.getTime().getReservedDate(),
                 reservation.getTime().getReservedTime())) {
             throw new ReservationPolicyRuntimeException(INVALID_RESERVATION_TIME);
@@ -56,7 +57,7 @@ public class ReservationService {
     public void updateArrivalState(Long reservationId, ArrivalState arrivalState) {
         Reservation reservation = reservationRepository.findByIdAndState_ReservationState(reservationId, APPROVAL)
                 .orElseThrow(() -> new ReservationRuntimeException(NO_SUCH_RESERVATION));
-        ReservationPolicy reservationPolicy = new ReservationPolicy(LocalDate.now(), LocalTime.now());
+        ReservationPolicy reservationPolicy = new ReservationPolicy(LocalDateTime.now());
         if (reservationPolicy.isValidArrivalTime(TEN.getMinute(), reservation.getTime().getReservedDate(),
                 reservation.getTime().getReservedTime())) {
             throw new ReservationPolicyRuntimeException(INVALID_RESERVATION_TIME);

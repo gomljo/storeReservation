@@ -1,42 +1,25 @@
 package com.store.reservation.reservation.domain.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class ReservationPolicy {
 
-    private final LocalTime currentTime;
-    private final LocalDate currentDate;
+    private final LocalDateTime current;
 
-    public ReservationPolicy(LocalDate currentDate, LocalTime currentTime) {
-        this.currentTime = currentTime;
-        this.currentDate = currentDate;
+    public ReservationPolicy(LocalDateTime current) {
+        this.current = current;
     }
 
     public boolean isValidReservationTime(int limit, LocalDate reservationDate, LocalTime reservationTime) {
-        return isAfterThanCurrentDate(reservationDate)
-                && isAfterThanCurrentTime(limit, reservationTime);
-    }
-
-    private boolean isAfterThanCurrentTime(int limit, LocalTime reservationTime) {
-        return this.currentTime.isBefore(reservationTime.plusMinutes(limit));
-    }
-
-    private boolean isAfterThanCurrentDate(LocalDate reservationDate) {
-        return this.currentDate.equals(reservationDate) || this.currentDate.isBefore(reservationDate);
-    }
-
-    private boolean isBeforeThanCurrentTime(int limit, LocalTime localTime){
-        return this.currentTime.plusMinutes(limit).isAfter(localTime);
-    }
-
-    private boolean equalsThanCurrentDate(LocalDate localDate){
-        return this.currentDate.equals(localDate);
+        return this.current.plusMinutes(limit).isBefore(LocalDateTime.of(reservationDate, reservationTime));
     }
 
     public boolean isValidArrivalTime(int limit, LocalDate reservationDate, LocalTime reservationTime) {
-        return (isBeforeThanCurrentTime(limit, reservationTime)
-                && isAfterThanCurrentTime(limit, reservationTime))
-                && equalsThanCurrentDate(reservationDate);
+        LocalDateTime reservationDateTime = LocalDateTime.of(reservationDate, reservationTime);
+        return (reservationDateTime.plusMinutes(limit).isAfter(this.current) || reservationDateTime.plusMinutes(limit).equals(this.current))
+                && (reservationDateTime.minusMinutes(limit).isBefore(this.current) || reservationDateTime.minusMinutes(limit).equals(this.current));
+
     }
 }
