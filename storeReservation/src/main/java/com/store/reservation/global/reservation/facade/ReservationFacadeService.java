@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import static com.store.reservation.reservation.exception.reservation.ReservationError.*;
@@ -46,7 +47,7 @@ public class ReservationFacadeService {
     public void reserve(Long storeId, Long customerId, ReservationDto reservationDto) {
         MemberInformation customer = memberService.searchBy(customerId);
         Store store = storeService.searchStoreByCustomer(storeId);
-        ReservationPolicy reservationPolicy = new ReservationPolicy(LocalDate.now(), LocalTime.now());
+        ReservationPolicy reservationPolicy = new ReservationPolicy(LocalDateTime.now());
 
         if (!store.isCorrectReservationTime(reservationDto.getReservationTime())) {
             throw new ReservationRuntimeException(ILLEGAL_RESERVATION_TIME);
