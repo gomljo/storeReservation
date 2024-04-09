@@ -13,12 +13,12 @@ public class MemberRuntimeException extends CustomRuntimeException {
     }
 
     @Override
-    protected String getDescription() {
+    public String getDescription() {
         return this.errorMessage;
     }
 
     @Override
-    protected String getErrorCode() {
+    public String getErrorCode() {
         return this.errorCode.toString();
     }
 }

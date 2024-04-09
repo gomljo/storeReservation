@@ -7,12 +7,12 @@ import lombok.RequiredArgsConstructor;
 public class ReservationPolicyRuntimeException extends CustomRuntimeException {
     private final ReservationPolicyError reservationPolicyError;
     @Override
-    protected String getDescription() {
+    public String getDescription() {
         return reservationPolicyError.getDescription();
     }
 
     @Override
-    protected String getErrorCode() {
+    public String getErrorCode() {
         return reservationPolicyError.name();
     }
 }
