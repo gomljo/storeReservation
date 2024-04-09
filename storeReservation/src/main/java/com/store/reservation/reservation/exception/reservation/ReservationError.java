@@ -1,6 +1,5 @@
 package com.store.reservation.reservation.exception.reservation;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

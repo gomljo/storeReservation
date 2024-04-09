@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 @Embeddable
 @Getter
@@ -15,9 +17,12 @@ import javax.persistence.Embeddable;
 @AllArgsConstructor
 @Builder
 public class State {
+
     @Builder.Default
+    @Enumerated(EnumType.STRING)
     private ReservationState reservationState = ReservationState.READY;
     @Builder.Default
+    @Enumerated(EnumType.STRING)
     private ArrivalState arrivalState = ArrivalState.READY;
 
     public void changeArrivalState(ArrivalState arrivalState) {

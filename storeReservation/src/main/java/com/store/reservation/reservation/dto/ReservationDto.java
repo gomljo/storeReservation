@@ -1,6 +1,6 @@
 package com.store.reservation.reservation.dto;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.store.reservation.reservation.constants.state.ArrivalState;
 import com.store.reservation.reservation.constants.state.ReservationState;
 import com.store.reservation.reservation.domain.model.Reservation;
@@ -10,7 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

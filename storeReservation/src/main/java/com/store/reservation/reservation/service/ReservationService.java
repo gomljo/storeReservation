@@ -16,9 +16,11 @@ import com.store.reservation.reservation.respository.queryDsl.ReservationSearchR
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 import static com.store.reservation.reservation.constants.state.ReservationState.APPROVAL;
@@ -43,9 +45,9 @@ public class ReservationService {
 
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ReservationRuntimeException(NO_SUCH_RESERVATION));
-        ReservationPolicy reservationPolicy = new ReservationPolicy(LocalTime.now());
-        if(!reservationPolicy.isCurrentTimeBeforeThanReservationTime(0,
-                reservation.getTime().getReservedTime())){
+        ReservationPolicy reservationPolicy = new ReservationPolicy(LocalDate.now(), LocalTime.now());
+        if (!reservationPolicy.isValidReservationTime(0, reservation.getTime().getReservedDate(),
+                reservation.getTime().getReservedTime())) {
             throw new ReservationPolicyRuntimeException(INVALID_RESERVATION_TIME);
         }
         reservation.updateReservationState(reservationState);
@@ -54,9 +56,9 @@ public class ReservationService {
     public void updateArrivalState(Long reservationId, ArrivalState arrivalState) {
         Reservation reservation = reservationRepository.findByIdAndState_ReservationState(reservationId, APPROVAL)
                 .orElseThrow(() -> new ReservationRuntimeException(NO_SUCH_RESERVATION));
-        ReservationPolicy reservationPolicy = new ReservationPolicy(LocalTime.now());
-        if(reservationPolicy.isCurrentTimeBeforeThanArrivalTime(TEN.getMinute(),
-                reservation.getTime().getReservedTime())){
+        ReservationPolicy reservationPolicy = new ReservationPolicy(LocalDate.now(), LocalTime.now());
+        if (reservationPolicy.isValidArrivalTime(TEN.getMinute(), reservation.getTime().getReservedDate(),
+                reservation.getTime().getReservedTime())) {
             throw new ReservationPolicyRuntimeException(INVALID_RESERVATION_TIME);
         }
         reservation.updateArrivalState(arrivalState);
@@ -82,6 +84,10 @@ public class ReservationService {
         if (reservationRepository.existsByCustomerAndTime(customer, reservationTime)) {
             throw new ReservationRuntimeException(ReservationError.ALREADY_RESERVED);
         }
+    }
+
+    public Page<Reservation> searchReservationListByStoreAndDateAndTime(Long storeId, ReservationTimeDto reservationTimeDto, Pageable pageable) {
+        return reservationSearchRepository.findReservationListByStoreAndDateAndTime(storeId, reservationTimeDto, pageable);
     }
 
 }

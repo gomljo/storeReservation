@@ -19,7 +19,7 @@ public class StoreDto {
     private String roadName;
     private TimeDto timeDto;
     private List<FoodDto> foodDtoList;
-
+    private Integer numberOfPeoplePerTime;
     public Set<Food> getFoodListToSet(){
         return foodDtoList.stream()
                 .map(Food::from)

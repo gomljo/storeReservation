@@ -1,13 +1,13 @@
 package com.store.reservation.store.util.implementation.kakao.exception;
 
-import com.store.reservation.exception.CustomException;
+import com.store.reservation.exception.CustomRuntimeException;
 
 
-public class LocalException extends CustomException {
+public class LocalRuntimeException extends CustomRuntimeException {
 
     private final LocalErrorCode localErrorCode;
 
-    public LocalException(LocalErrorCode localErrorCode) {
+    public LocalRuntimeException(LocalErrorCode localErrorCode) {
         this.localErrorCode = localErrorCode;
     }
 

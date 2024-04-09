@@ -11,7 +11,7 @@ import java.util.Optional;
 
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-    
+
     boolean existsByCustomerAndTime(MemberInformation customer, Time time);
 
     Optional<Reservation> findByIdAndState_ReservationState(Long id, ReservationState reservationState);

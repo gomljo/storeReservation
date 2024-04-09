@@ -27,7 +27,7 @@ public class StoreDetailForManagerDto {
     private TimeDto operationHours;
     private Location location;
     private List<LocalTime> reservationList;
-    private Long numberOfReservationPerTime;
+    private int numberOfReservationPerTime;
 
     public static StoreDetailForManagerDto from(Store store) {
         return StoreDetailForManagerDto.builder()
