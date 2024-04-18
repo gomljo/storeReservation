@@ -74,7 +74,7 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepository {
     }
 
     private OrderSpecifier<Double> starRatingDesc() {
-        return store.starRating.desc();
+        return store.starCount.doubleValue().divide(store.numberOfReviews.doubleValue()).desc();
     }
 
     private OrderSpecifier<Long> numberOfReviewsDesc() {

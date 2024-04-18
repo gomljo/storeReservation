@@ -127,7 +127,7 @@ class StoreServiceTest {
                 .storeName("나의 매장")
                 .numberOfReviews(100L)
                 .numberOfReservationPerTime(10)
-                .starRating(4.5)
+                .starCount(5)
                 .operatingHours(OperatingHours.builder()
                         .openingHours(LocalTime.of(9, 0))
                         .closingHours(LocalTime.of(22, 0))
@@ -163,7 +163,7 @@ class StoreServiceTest {
                 () -> assertEquals(actualStore.getFoods(), expectedStore.getFoods()),
                 () -> assertEquals(actualStore.getNumberOfReviews(), expectedStore.getNumberOfReviews()),
                 () -> assertEquals(actualStore.getOperatingHours(), expectedStore.getOperatingHours()),
-                () -> assertEquals(actualStore.getStarRating(), expectedStore.getStarRating()),
+                () -> assertEquals(actualStore.getStarCount(), expectedStore.getStarCount()),
                 () -> assertEquals(actualStore.getNumberOfReservationPerTime(), expectedStore.getNumberOfReservationPerTime())
         );
 

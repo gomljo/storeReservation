@@ -39,7 +39,7 @@ public class StoreDetailForCustomerDto {
                 .county(store.getLocation().getCounty())
                 .district(store.getLocation().getDistrict())
                 .roadName(store.getLocation().getRoadName())
-                .starRating(store.getStarRating())
+                .starRating(store.getStarCount())
                 .openingHour(store.getOperatingHours().getOpeningHours())
                 .closingHour(store.getOperatingHours().getClosingHours())
                 .breakTimeStart(store.getOperatingHours().getStartTime())
