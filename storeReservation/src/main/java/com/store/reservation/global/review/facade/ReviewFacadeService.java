@@ -15,6 +15,7 @@ import com.store.reservation.review.service.ReviewService;
 import com.store.reservation.store.domain.model.Store;
 import com.store.reservation.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,21 +65,19 @@ public class ReviewFacadeService {
         store.changeStarCount(previousStarRating, review.getStarRating());
     }
 
-    public SearchResponse<ReviewDetailDto> searchReviewListForCustomerBy(SecurityUser customerAuth, Long customerId,
-                                                                         ReviewSearchDto reviewSearchDto) {
+    public Page<Review> searchReviewListForCustomerBy(SecurityUser customerAuth, Long customerId,
+                                                     ReviewSearchDto reviewSearchDto) {
         if (customerAuth.isNotSameUser(customerId)) {
             throw new ReviewRuntimeException(ILLEGAL_ACCESS);
         }
-        return SearchResponse.from(reviewService.searchReviewListForCustomerBy(customerId, reviewSearchDto),
-                ReviewDetailDto::from);
+        return reviewService.searchReviewListForCustomerBy(customerId, reviewSearchDto);
     }
 
-    public SearchResponse<ReviewDetailDto> searchReviewListForManagerBy(SecurityUser managerAuth, Long storeId, ReviewSearchDto reviewSearchDto) {
+    public Page<Review> searchReviewListForManagerBy(SecurityUser managerAuth, Long storeId, ReviewSearchDto reviewSearchDto) {
         Store store = storeService.searchStoreByCustomer(storeId);
         if (managerAuth.isNotSameUser(store.getMemberInformation().getId())) {
             throw new ReviewRuntimeException(ILLEGAL_ACCESS);
         }
-        return SearchResponse.from(reviewService.searchReviewListForManagerBy(storeId, reviewSearchDto),
-                ReviewDetailDto::from);
+        return reviewService.searchReviewListForManagerBy(storeId, reviewSearchDto);
     }
 }

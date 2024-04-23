@@ -88,13 +88,13 @@ public class ReviewController {
                                                                                                  in = ParameterIn.QUERY)
                                                                                          @RequestParam @Min(10) @Max(30) int pageSize) {
 
-        return ResponseEntity.ok(reviewFacadeService.searchReviewListForCustomerBy(customer, customerId,
+        return ResponseEntity.ok(SearchResponse.from(reviewFacadeService.searchReviewListForCustomerBy(customer, customerId,
                 ReviewSearchDto.builder()
                         .duration(duration)
                         .sortOption(sortOption)
                         .pageable(PageRequest.of(pageIndex, pageSize))
                         .build()
-        ));
+        ), ReviewDetailDto::from));
     }
 
     @Operation(tags = "reviews")
@@ -120,12 +120,12 @@ public class ReviewController {
                                                                                                 description = "페이지 당 크기",
                                                                                                 in = ParameterIn.QUERY)
                                                                                         @RequestParam @Min(10) @Max(30) int pageSize) {
-        return ResponseEntity.ok(reviewFacadeService.searchReviewListForManagerBy(manager, storeId,
+        return ResponseEntity.ok(SearchResponse.from(reviewFacadeService.searchReviewListForManagerBy(manager, storeId,
                 ReviewSearchDto.builder()
                         .duration(duration)
                         .sortOption(sortOption)
                         .pageable(PageRequest.of(pageIndex, pageSize))
-                        .build()));
+                        .build()), ReviewDetailDto::from));
     }
 
 }
