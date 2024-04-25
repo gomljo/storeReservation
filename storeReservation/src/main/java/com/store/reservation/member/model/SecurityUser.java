@@ -55,4 +55,8 @@ public class SecurityUser implements UserDetails{
     public boolean isEnabled() {
         return false;
     }
+
+    public boolean isNotSameUser(Long id){
+        return !this.getId().equals(id);
+    }
 }

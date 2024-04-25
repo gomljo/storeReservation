@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.store.reservation.store.util.GeoCoding;
 import com.store.reservation.store.util.implementation.kakao.dto.LocalApiDto;
 import com.store.reservation.store.util.implementation.kakao.dto.LocationDto;
-import com.store.reservation.store.util.implementation.kakao.exception.LocalException;
+import com.store.reservation.store.util.implementation.kakao.exception.LocalRuntimeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,7 +52,7 @@ public class RoadNameTransformer implements GeoCoding {
             return LocationDto.from(localApiDto);
         } catch (Exception e) {
             log.info(e.getMessage());
-            throw new LocalException(CANNOT_GET_API_RESPONSE);
+            throw new LocalRuntimeException(CANNOT_GET_API_RESPONSE);
         }
     }
 

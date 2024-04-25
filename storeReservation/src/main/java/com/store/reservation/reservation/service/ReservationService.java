@@ -20,11 +20,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 import static com.store.reservation.reservation.constants.state.ReservationState.APPROVAL;
+import static com.store.reservation.reservation.constants.state.ReservationState.READY;
 import static com.store.reservation.reservation.constants.time.TimeLimit.TEN;
 import static com.store.reservation.reservation.exception.reservation.ReservationError.NO_SUCH_RESERVATION;
 import static com.store.reservation.reservation.exception.reservationPolicy.ReservationPolicyError.INVALID_RESERVATION_TIME;
@@ -46,6 +45,9 @@ public class ReservationService {
 
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ReservationRuntimeException(NO_SUCH_RESERVATION));
+        if (!reservation.getState().getReservationState().equals(READY)) {
+            throw new ReservationRuntimeException(ReservationError.ALREADY_DECIDE);
+        }
         ReservationPolicy reservationPolicy = new ReservationPolicy(LocalDateTime.now());
         if (!reservationPolicy.isValidReservationTime(0, reservation.getTime().getReservedDate(),
                 reservation.getTime().getReservedTime())) {
@@ -91,4 +93,8 @@ public class ReservationService {
         return reservationSearchRepository.findReservationListByStoreAndDateAndTime(storeId, reservationTimeDto, pageable);
     }
 
+    public Reservation searchBy(Long reservationId) {
+        return reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ReservationRuntimeException(NO_SUCH_RESERVATION));
+    }
 }

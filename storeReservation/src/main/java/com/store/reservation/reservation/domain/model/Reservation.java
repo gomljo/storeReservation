@@ -14,7 +14,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalTime;
+
+import static com.store.reservation.reservation.constants.state.ArrivalState.ARRIVED;
+import static com.store.reservation.reservation.constants.state.ReservationState.APPROVAL;
 
 @Entity
 @Getter
@@ -52,4 +54,13 @@ public class Reservation extends BaseEntity {
     public void updateArrivalState(ArrivalState updatedArrivalState) {
         this.state.changeArrivalState(updatedArrivalState);
     }
+
+    public boolean isApproval() {
+        return this.state.getReservationState().equals(APPROVAL);
+    }
+
+    public boolean isArrived() {
+        return this.state.getArrivalState().equals(ARRIVED);
+    }
+
 }
