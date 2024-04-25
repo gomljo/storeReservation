@@ -86,7 +86,7 @@ public class Store extends BaseEntity {
     }
 
     public void changeStarCount(int previous, int changed) {
-        this.starCount = Math.max(0, this.starCount - previous);
+        this.starCount -= previous;
         this.starCount += changed;
     }
 
