@@ -35,7 +35,7 @@ public class ReviewFacadeService {
         Reservation reservation = reservationService.searchBy(reservationId);
 
         if (!reservation.getCustomer().isSame(customerId)) {
-            throw new ReviewRuntimeException(ReviewError.ILLEGAL_ACCESS);
+            throw new ReviewRuntimeException(ILLEGAL_ACCESS);
         }
 
         if (!reservation.isApproval() && !reservation.isArrived()) {
@@ -53,7 +53,7 @@ public class ReviewFacadeService {
                 .starRating(reviewDto.getStarRating())
                 .build());
     }
-
+    @DistributedLock(group = "review", key = "#reviewId")
     public void modifyReview(Long customerId, Long reviewId, ReviewDto reviewDto) {
         Review review = reviewService.searchBy(reviewId);
         int previousStarRating = review.getStarRating();

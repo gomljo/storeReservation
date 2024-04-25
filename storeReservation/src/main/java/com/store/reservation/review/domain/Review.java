@@ -17,11 +17,11 @@ public class Review extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String content;
 
-    private int starRating;
+    private Integer starRating;
 
     @ManyToOne
     @JoinColumn(name = "member_information_id")

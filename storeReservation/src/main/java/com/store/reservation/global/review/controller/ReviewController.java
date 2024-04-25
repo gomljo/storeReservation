@@ -97,7 +97,9 @@ public class ReviewController {
         ), ReviewDetailDto::from));
     }
 
-    @Operation(tags = "reviews")
+    @Operation(summary = "매장에 대한 리뷰 목록 조회",
+            description = "매장에 대해 작성된 리뷰 목록을 조회 기간, 정렬 순서, 페이지 번호와 페이지 당 크기 정보를 통해 조회",
+            tags = "reviews")
     @GetMapping("/store/{storeId}")
     public ResponseEntity<SearchResponse<ReviewDetailDto>> searchReviewListForManagerBy(@AuthenticationPrincipal SecurityUser manager,
                                                                                         @Parameter(name = "storeId",

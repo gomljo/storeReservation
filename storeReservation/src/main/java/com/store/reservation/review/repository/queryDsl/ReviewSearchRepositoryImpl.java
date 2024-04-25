@@ -1,11 +1,14 @@
 package com.store.reservation.review.repository.queryDsl;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.DateTimePath;
+import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.store.reservation.global.review.dto.ReviewSearchDto;
 import com.store.reservation.reservation.constants.search.Duration;
 import com.store.reservation.review.domain.Review;
+import com.store.reservation.review.repository.constant.ComparatorFlags;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -16,6 +19,8 @@ import java.util.List;
 
 import static com.store.reservation.reservation.constants.search.Duration.*;
 import static com.store.reservation.review.domain.QReview.review;
+import static com.store.reservation.review.repository.constant.ComparatorFlags.CREATE_AT;
+import static com.store.reservation.review.repository.constant.ComparatorFlags.MODIFIED_AT;
 
 @Repository
 @RequiredArgsConstructor
@@ -25,9 +30,15 @@ public class ReviewSearchRepositoryImpl implements ReviewSearchRepository {
 
     @Override
     public Page<Review> searchReviewListForCustomerBy(Long customerId, ReviewSearchDto reviewSearchDto) {
+        LocalDateTime today = LocalDateTime.now();
+        LocalDateTime limit = calculateLimit(reviewSearchDto.getDuration(), today);
         List<Review> reviewList = queryFactory.selectFrom(review)
                 .where(review.memberInformation.id.eq(customerId)
-                        .and(durationSelector(reviewSearchDto.getDuration(), LocalDateTime.now())))
+                        .and(isModifiedDateNull()
+                                .and(isInDuration(MODIFIED_AT, reviewSearchDto.getDuration(), limit,today))
+                        .or(isInDuration(CREATE_AT, reviewSearchDto.getDuration(), limit, today))
+                        )
+                )
                 .offset(reviewSearchDto.getPageable().getOffset())
                 .limit(reviewSearchDto.getPageable().getPageSize() + 1)
                 .fetch();
@@ -35,7 +46,11 @@ public class ReviewSearchRepositoryImpl implements ReviewSearchRepository {
         Long count = queryFactory.select(Wildcard.count)
                 .from(review)
                 .where(review.memberInformation.id.eq(customerId)
-                        .and(durationSelector(reviewSearchDto.getDuration(), LocalDateTime.now())))
+                        .and(isModifiedDateNull()
+                                .and(isInDuration(MODIFIED_AT, reviewSearchDto.getDuration(), limit,today))
+                                .or(isInDuration(CREATE_AT, reviewSearchDto.getDuration(), limit, today))
+                        )
+                )
                 .offset(reviewSearchDto.getPageable().getOffset())
                 .limit(reviewSearchDto.getPageable().getPageSize() + 1)
                 .fetchFirst();
@@ -44,43 +59,62 @@ public class ReviewSearchRepositoryImpl implements ReviewSearchRepository {
 
     @Override
     public Page<Review> searchReviewListForManagerBy(Long storeId, ReviewSearchDto reviewSearchDto) {
+        LocalDateTime today = LocalDateTime.now();
+        LocalDateTime limit = calculateLimit(reviewSearchDto.getDuration(), today);
         List<Review> reviewList = queryFactory.selectFrom(review)
-                .where(review.store.id.eq(storeId).and(durationSelector(reviewSearchDto.getDuration(), LocalDateTime.now())))
+                .where(review.store.id.eq(storeId)
+                        .and(isModifiedDateNull()
+                                .and(isInDuration(MODIFIED_AT, reviewSearchDto.getDuration(), limit,today))
+                        .or(isInDuration(CREATE_AT, reviewSearchDto.getDuration(), limit, today))
+                        )
+                )
                 .offset(reviewSearchDto.getPageable().getOffset())
                 .limit(reviewSearchDto.getPageable().getPageSize() + 1)
                 .fetch();
         Long count = queryFactory.select(Wildcard.count)
                 .from(review)
-                .where(review.store.id.eq(storeId).and(durationSelector(reviewSearchDto.getDuration(), LocalDateTime.now())))
+                .where(review.store.id.eq(storeId)
+                        .and(isModifiedDateNull()
+                                .and(isInDuration(MODIFIED_AT, reviewSearchDto.getDuration(), limit,today))
+                        .or(isInDuration(CREATE_AT, reviewSearchDto.getDuration(), limit, today))
+                    )
+                )
                 .offset(reviewSearchDto.getPageable().getOffset())
                 .limit(reviewSearchDto.getPageable().getPageSize() + 1)
                 .fetchFirst();
         return new PageImpl<>(reviewList, reviewSearchDto.getPageable(), count);
     }
+//    private NumberPath<Long> selectIdComparator(){
+//
+//    }
 
-
-    private BooleanExpression durationSelector(Duration duration, LocalDateTime today) {
-        switch (duration) {
-
-            case ONE_YEAR:
-                return review.modifiedAt.isNotNull().and(review.modifiedAt.between(today.minusYears(ONE_YEAR.getHowManyPast()), today))
-                        .or(review.createAt.between(today.minusYears(ONE_YEAR.getHowManyPast()), today));
-            case SIX_MONTH:
-                return review.modifiedAt.isNotNull().and(review.modifiedAt.between(today.minusMonths(SIX_MONTH.getHowManyPast()), today))
-                        .or(review.createAt.between(today.minusMonths(SIX_MONTH.getHowManyPast()), today));
-            case THREE_MONTH:
-                return review.modifiedAt.isNotNull().and(review.modifiedAt.between(today.minusMonths(THREE_MONTH.getHowManyPast()), today))
-                        .or(review.createAt.between(today.minusMonths(SIX_MONTH.getHowManyPast()), today));
-            case ONE_MONTH:
-                return review.modifiedAt.isNotNull().and(review.modifiedAt.between(today.minusMonths(ONE_MONTH.getHowManyPast()), today))
-                        .or(review.createAt.between(today.minusMonths(ONE_MONTH.getHowManyPast()), today));
-            case TOTAL:
-                return review.modifiedAt.isNotNull().and(review.modifiedAt.eq(today).or(review.modifiedAt.before(today)))
-                        .or(review.createAt.eq(today).or(review.createAt.before(today)))
-                        ;
-        }
-        return review.modifiedAt.isNotNull().and(review.modifiedAt.between(today.minusDays(THIS_WEEK.getHowManyPast()), today))
-                .or(review.createAt.between(today.minusDays(THIS_WEEK.getHowManyPast()), today));
-
+    private BooleanExpression isModifiedDateNull() {
+        return review.modifiedAt.isNotNull();
     }
+
+    private BooleanExpression isInDuration(ComparatorFlags flags, Duration duration, LocalDateTime limit, LocalDateTime today) {
+        DateTimePath<LocalDateTime> comparator = selectComparator(flags);
+        if (duration == TOTAL) {
+            return comparator.eq(today).or(comparator.before(today));
+        }
+        return comparator.between(limit, today);
+    }
+    private DateTimePath<LocalDateTime> selectComparator(ComparatorFlags flags){
+        if(flags== CREATE_AT){
+            return review.createAt;
+        }
+        return review.modifiedAt;
+    }
+    private LocalDateTime calculateLimit(Duration duration, LocalDateTime today) {
+        switch (duration.getTimeUnit()){
+            case WEEK:
+                return today.minusWeeks(duration.getHowManyPast());
+            case MONTH:
+                return today.minusMonths(duration.getHowManyPast());
+            case YEAR:
+                return today.minusYears(duration.getHowManyPast());
+        }
+        return today;
+    }
+
 }
