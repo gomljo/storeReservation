@@ -1,7 +1,12 @@
 package com.store.reservation.notification.token.repository;
 
 import com.store.reservation.notification.token.document.FCMToken;
-import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface FCMTokenRepository extends ElasticsearchRepository<FCMToken, String> {
+import java.util.Optional;
+
+
+public interface FCMTokenRepository extends MongoRepository<FCMToken, String> {
+    Optional<FCMToken> findByEmail(String email);
+    boolean existsByEmail(String email);
 }

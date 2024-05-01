@@ -2,11 +2,11 @@ package com.store.reservation.notification.token.service;
 
 import com.store.reservation.notification.token.document.FCMToken;
 import com.store.reservation.notification.token.document.Token;
-import com.store.reservation.notification.token.exception.FCMTokenErrorCode;
 import com.store.reservation.notification.token.exception.FCMTokenException;
 import com.store.reservation.notification.token.repository.FCMTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,12 +15,13 @@ import static com.store.reservation.notification.token.exception.FCMTokenErrorCo
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class FCMTokenService {
 
     private final FCMTokenRepository fcmTokenRepository;
 
     public void createNewToken(String email, String deviceUUID, String hash) {
-        if (!fcmTokenRepository.existsById(email)) {
+        if (fcmTokenRepository.existsByEmail(email)) {
             throw new FCMTokenException(ALREADY_EXISTS);
         }
         fcmTokenRepository.save(FCMToken.builder()
@@ -32,12 +33,12 @@ public class FCMTokenService {
                 .build());
     }
 
-    public void addNewToken(String email, String deviceUUID, String hash){
+    public void addNewToken(String email, String deviceUUID, String hash) {
         FCMToken fcmToken = fcmTokenRepository.findById(email)
-                .orElseThrow(()->new FCMTokenException(NO_SUCH_TOKEN));
+                .orElseThrow(() -> new FCMTokenException(NO_SUCH_TOKEN));
         fcmToken.addToken(Token.builder()
-                        .deviceUUID(deviceUUID)
-                        .hash(hash)
+                .deviceUUID(deviceUUID)
+                .hash(hash)
                 .build());
         fcmTokenRepository.save(fcmToken);
 
