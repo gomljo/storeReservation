@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.MongoId;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import javax.persistence.Id;
 import java.util.ArrayList;
@@ -24,6 +24,7 @@ public class FCMToken {
     @Id
     private String email;
     @Builder.Default
+    @DocumentReference
     private List<Token> tokens = new ArrayList<>();
 
 
@@ -35,9 +36,11 @@ public class FCMToken {
     }
 
     public void addToken(Token token) {
-        List<Token> newTokens = new ArrayList<>(this.tokens);
-        newTokens.add(token);
-        this.tokens = newTokens;
+        if (!this.tokens.contains(token)) {
+            List<Token> newTokens = new ArrayList<>(this.tokens);
+            newTokens.add(token);
+            this.tokens = newTokens;
+        }
     }
 
 }
