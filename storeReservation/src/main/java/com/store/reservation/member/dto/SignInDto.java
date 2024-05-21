@@ -1,35 +1,26 @@
 package com.store.reservation.member.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.store.reservation.member.validation.email.Email;
+import com.store.reservation.member.validation.password.Password;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+import java.util.Date;
 
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class SignInDto {
-
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Builder
-    public static class Request {
-        private String email;
-        private String password;
-    }
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class Response {
-        private Long id;
-        private String token;
-        public static Response from(Long userId, String token){
-            return Response.builder()
-                    .id(userId)
-                    .token(token)
-                    .build();
-        }
-    }
-
+    @Email
+    private String email;
+    @Password
+    private String password;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'hh:mm:ss", timezone = "Asia/Seoul")
+    @NotBlank
+    private Date today;
 }
