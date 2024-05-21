@@ -28,7 +28,7 @@ public class CustomUserDetailService implements UserDetailsService {
      * @throws UsernameNotFoundException : 전달 받은 회원 아이디에 해당하는 개인 회원이 없는 경우 발생
      */
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public SecurityUser loadUserByUsername(String email) throws UsernameNotFoundException {
         log.info("이메일로 회원 조회 시작");
         MemberInformation memberInformation = memberInformationRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(email));
