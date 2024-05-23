@@ -4,6 +4,7 @@ import com.store.reservation.member.validation.email.Email;
 import com.store.reservation.member.validation.name.Name;
 import com.store.reservation.member.validation.password.Password;
 import com.store.reservation.member.validation.phoneNumber.PhoneNumber;
+import com.store.reservation.member.validation.role.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,5 +29,5 @@ public class SignUpDto {
     @PhoneNumber
     private String phoneNumber;
     @NotNull
-    private List<String> roles;
+    private List<@Role String> roles;
 }
