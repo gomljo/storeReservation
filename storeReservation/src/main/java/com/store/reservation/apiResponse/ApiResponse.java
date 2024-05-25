@@ -1,7 +1,6 @@
 package com.store.reservation.apiResponse;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.google.protobuf.Api;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
