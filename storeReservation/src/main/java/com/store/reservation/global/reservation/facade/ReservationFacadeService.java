@@ -3,7 +3,7 @@ package com.store.reservation.global.reservation.facade;
 import com.store.reservation.aop.lock.annotation.DistributedLock;
 import com.store.reservation.common.dto.SearchResponse;
 import com.store.reservation.member.domain.MemberInformation;
-import com.store.reservation.member.model.SecurityUser;
+import com.store.reservation.member.security.userDetails.SecurityUser;
 import com.store.reservation.member.service.MemberService;
 import com.store.reservation.reservation.constants.state.ArrivalState;
 import com.store.reservation.reservation.constants.state.ReservationState;
@@ -27,9 +27,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 import static com.store.reservation.reservation.exception.reservation.ReservationError.*;
 import static com.store.reservation.reservation.exception.reservationPolicy.ReservationPolicyError.INVALID_RESERVATION_TIME;
