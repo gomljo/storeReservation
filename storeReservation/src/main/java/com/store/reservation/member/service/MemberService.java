@@ -50,8 +50,8 @@ public class MemberService {
         if (!this.passwordEncoder.matches(signInRequest.getPassword(), memberInformation.getPassword())) {
             throw new MemberRuntimeException(PASSWORD_NOT_MATCH);
         }
-        String accessToken = this.jwtProvider.generateAccessToken(memberInformation.getEmail(), signInRequest.getToday());
-        String refreshToken = this.jwtProvider.issueRefreshToken(memberInformation.getEmail(), signInRequest.getToday());
+        String accessToken = this.jwtProvider.generateAccessToken(memberInformation.getEmail(), signInRequest.getDate());
+        String refreshToken = this.jwtProvider.issueRefreshToken(memberInformation.getEmail(), signInRequest.getDate());
 
         return new TokenDto(accessToken, refreshToken);
     }
