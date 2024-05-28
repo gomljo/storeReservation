@@ -1,9 +1,8 @@
 package com.store.reservation.annotation;
 
 
-import com.store.reservation.member.security.CustomUserDetailService;
-import com.store.reservation.member.security.JwtAuthenticationFilter;
-import com.store.reservation.member.security.TokenProvider;
+import com.store.reservation.member.security.filter.JwtAuthenticationFilter;
+import com.store.reservation.member.security.provider.JWTProvider;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Retention;
@@ -14,6 +13,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Retention(RUNTIME)
 @Target(TYPE)
-@Import({TokenProvider.class, JwtAuthenticationFilter.class})
+@Import({JWTProvider.class, JwtAuthenticationFilter.class})
 public @interface UserTest {
 }

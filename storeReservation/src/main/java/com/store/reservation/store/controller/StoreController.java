@@ -1,7 +1,7 @@
 package com.store.reservation.store.controller;
 
 import com.store.reservation.member.domain.MemberInformation;
-import com.store.reservation.member.model.SecurityUser;
+import com.store.reservation.member.security.userDetails.SecurityUser;
 import com.store.reservation.member.service.MemberService;
 import com.store.reservation.store.constant.SearchCondition;
 import com.store.reservation.store.constant.StoreStatus;

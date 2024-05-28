@@ -6,7 +6,7 @@ import com.store.reservation.global.review.dto.ReviewDto;
 import com.store.reservation.global.review.dto.ReviewSearchDto;
 import com.store.reservation.global.review.facade.ReviewFacadeService;
 import com.store.reservation.global.review.state.ReviewStatusCode;
-import com.store.reservation.member.model.SecurityUser;
+import com.store.reservation.member.security.userDetails.SecurityUser;
 import com.store.reservation.reservation.constants.search.Duration;
 import com.store.reservation.reservation.constants.search.SortOption;
 import com.store.reservation.reservation.validator.duration.DurationCheck;
