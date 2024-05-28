@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Constraint(validatedBy = PasswordValidator.class)
 public @interface Password {
-    String message() default "비밀번호는 6~10자리이며 영문, 특수문자(~,!,$,*), 숫자를 포함합니다.";
+    String message() default "비밀번호는 6~10자리이며 최소 1개의 영문, 특수문자(@,$,!,%,*,~,&), 숫자를 포함합니다.";
     String value() default "1234!Qww";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
