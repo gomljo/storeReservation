@@ -3,6 +3,7 @@ package com.store.reservation.member.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.store.reservation.config.TestSecurityConfig;
 import com.store.reservation.member.domain.type.Role;
+import com.store.reservation.member.dto.SignInDto;
 import com.store.reservation.member.dto.SignUpDto;
 import com.store.reservation.member.exception.MemberRuntimeException;
 import com.store.reservation.member.service.MemberService;
@@ -23,10 +24,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.store.reservation.member.exception.MemberError.ALREADY_JOINED_CUSTOMER;
+import static com.store.reservation.member.exception.MemberError.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -239,7 +241,7 @@ class MemberControllerTest {
         @ParameterizedTest
         @MethodSource("userRoleProviderWhenSuccess")
         @DisplayName("성공 - 올바른 사용자 권한을 전달한 경우")
-        void success_signup_when_user_role_is_invalid(List<String> role) throws Exception {
+        void success_signup_when_user_role_is_valid(List<String> role) throws Exception {
             //given
             SignUpDto signUpDto = SignUpDto.builder()
                     .email("dev@gmail.com")
@@ -277,5 +279,160 @@ class MemberControllerTest {
         }
     }
 
+    @Nested
+    @DisplayName("로그인")
+    class SignInRequest {
+        @Test
+        @DisplayName("성공")
+        void success() throws Exception {
+
+            //given
+            LocalDateTime today = LocalDateTime.now();
+            SignInDto signInDto = SignInDto.builder()
+                    .email("dev@gmail.com")
+                    .password("12345Qww!sadf")
+                    .today(today)
+                    .build();
+            String content = objectMapper.writeValueAsString(signInDto);
+            //when
+            ResultActions perform = mockMvc.perform(post("/member/login")
+                    .content(content)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON));
+
+            //then
+            perform.andDo(print()).andExpectAll(
+                    status().isOk(),
+                    jsonPath("$.status").value("SUCCESS")
+            );
+        }
+
+        @Test
+        @DisplayName("실패 - 회원 가입한 적이 없는 경우")
+        void fail_when_have_not_signup_return_bad_request() throws Exception {
+            //given
+            LocalDateTime today = LocalDateTime.now();
+            SignInDto signInDto = SignInDto.builder()
+                    .email("dev@gmail.com")
+                    .password("12345Qww!sadf")
+                    .today(today)
+                    .build();
+            MemberRuntimeException expectedException = new MemberRuntimeException(NO_SUCH_MEMBER);
+            doThrow(expectedException).when(memberService).signIn(any());
+            String content = objectMapper.writeValueAsString(signInDto);
+            //when
+            ResultActions perform = mockMvc.perform(post("/member/login")
+                    .content(content)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON));
+
+            //then
+            perform.andDo(print()).andExpectAll(
+                    status().isBadRequest(),
+                    jsonPath("$.status").value("ERROR"),
+                    jsonPath("$.data").value(expectedException.getErrorCode()),
+                    jsonPath("$.message").value(expectedException.getDescription())
+            );
+        }
+
+        @Test
+        @DisplayName("실패 - 비밀번호를 잘못 입력한 경우")
+        void fail_when_enter_wrong_password_then_return_bad_request() throws Exception {
+            //given
+            LocalDateTime today = LocalDateTime.now();
+            SignInDto signInDto = SignInDto.builder()
+                    .email("dev@gmail.com")
+                    .password("12345Qww!sadf")
+                    .today(today)
+                    .build();
+            MemberRuntimeException expectedException = new MemberRuntimeException(PASSWORD_NOT_MATCH);
+            doThrow(expectedException).when(memberService).signIn(any());
+            String content = objectMapper.writeValueAsString(signInDto);
+            //when
+            ResultActions perform = mockMvc.perform(post("/member/login")
+                    .content(content)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON));
+
+            //then
+            perform.andDo(print()).andExpectAll(
+                    status().isBadRequest(),
+                    jsonPath("$.status").value("ERROR"),
+                    jsonPath("$.data").value(expectedException.getErrorCode()),
+                    jsonPath("$.message").value(expectedException.getDescription())
+            );
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"@gmail.com", "dev@gmail", "!@#$!$#!@@gmail.com"})
+        @DisplayName("실패 - 이메일 형식이 올바르지 않은 경우")
+        void fail_because_invalid_email_form_then_return_bad_request(String email) throws Exception {
+            //given
+            LocalDateTime today = LocalDateTime.now();
+            SignInDto signInDto = SignInDto.builder()
+                    .email(email)
+                    .password("12345Qww!sadf")
+                    .today(today)
+                    .build();
+            String content = objectMapper.writeValueAsString(signInDto);
+            //when
+            ResultActions perform = mockMvc.perform(post("/member/login")
+                    .content(content)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON));
+
+            //then
+            perform.andDo(print()).andExpectAll(
+                    status().isBadRequest(),
+                    jsonPath("$.status").value("ERROR"),
+                    jsonPath("$.data").value("이메일 형식에 맞춰서 요청해주세요"),
+                    jsonPath("$.message").value(HttpStatus.BAD_REQUEST.toString())
+            );
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"12344554", "123445Q", "!@1234W", "213141w"})
+        @DisplayName("실패 - 패스워드 형식이 올바르지 않은 경우")
+        void fail_because_invalid_password_then_return_bad_request(String password) throws Exception {
+            //given
+            LocalDateTime today = LocalDateTime.now();
+            SignInDto signInDto = SignInDto.builder()
+                    .email("dev@gmail.com")
+                    .password(password)
+                    .today(today)
+                    .build();
+            String content = objectMapper.writeValueAsString(signInDto);
+            //when
+            ResultActions perform = mockMvc.perform(post("/member/login")
+                    .content(content)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON));
+
+            //then
+            perform.andDo(print()).andExpectAll(
+                    status().isBadRequest(),
+                    jsonPath("$.status").value("ERROR"),
+                    jsonPath("$.message").value(HttpStatus.BAD_REQUEST.toString())
+            );
+        }
+
+        @Test
+        public void fail_when_Null_Date_then_return_bad_request() throws Exception {
+            //given
+            SignInDto signInDto = SignInDto.builder()
+                    .email("valid.email@example.com")
+                    .password("ValidPassword123!")
+                    .today(null)
+                    .build();
+            MemberRuntimeException memberRuntimeException = new MemberRuntimeException(TIME_EMPTY);
+            doThrow(memberRuntimeException).when(memberService).signIn(any());
+            // when
+            ResultActions actions = mockMvc.perform(post("/member/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(signInDto)));
+            // then
+            actions.andExpect(status().isBadRequest());
+        }
+    }
 
 }
