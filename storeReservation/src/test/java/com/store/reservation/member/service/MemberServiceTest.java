@@ -126,7 +126,7 @@ class MemberServiceTest {
     }
 
     @Nested
-    @DisplayName("로그인")
+    @DisplayName("로그인 기능 테스트")
     class LoginTest {
         @Test
         @DisplayName("성공 - 회원 가입한 상태이고 올바른 이메일과 패스워드를 입력했다.")
@@ -213,6 +213,20 @@ class MemberServiceTest {
 
             assertEquals(expectedException.getErrorCode(), actualException.getErrorCode());
             assertEquals(expectedException.getDescription(), actualException.getDescription());
+        }
+    }
+
+    @Nested
+    @DisplayName("로그아웃")
+    class LogoutTest {
+        @Test
+        @DisplayName("성공")
+        void success() {
+            String email = "dev@gmail.com";
+
+            doNothing().when(jwtProvider).deleteRefreshToken(anyString());
+            memberService.logout(email);
+            verify(jwtProvider, times(1)).deleteRefreshToken(anyString());
         }
     }
 }

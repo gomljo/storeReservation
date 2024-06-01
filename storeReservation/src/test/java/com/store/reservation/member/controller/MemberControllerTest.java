@@ -1,6 +1,8 @@
 package com.store.reservation.member.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.store.reservation.annotation.WithCustomer;
 import com.store.reservation.config.TestSecurityConfig;
 import com.store.reservation.member.domain.type.Role;
 import com.store.reservation.member.dto.SignInDto;
@@ -48,7 +50,7 @@ class MemberControllerTest {
 
     @Nested
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @DisplayName("회원 가입")
+    @DisplayName("회원가입 API 테스트")
     class signupTest {
         @Test
         @DisplayName("성공")
@@ -280,7 +282,7 @@ class MemberControllerTest {
     }
 
     @Nested
-    @DisplayName("로그인")
+    @DisplayName("로그인 API 테스트")
     class SignInRequest {
         @Test
         @DisplayName("성공")
@@ -434,5 +436,43 @@ class MemberControllerTest {
             actions.andExpect(status().isBadRequest());
         }
     }
+    @Nested
+    @DisplayName("로그아웃 API 테스트")
+    class LogoutTest{
+        @Test
+        @DisplayName("성공")
+        @WithCustomer(email = "dev@gmail.com")
+        void success() throws Exception {
+            //given
+
+            //when
+            ResultActions perform = mockMvc.perform(post("/member/logout")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON));
+
+            //then
+            perform.andDo(print()).andExpectAll(
+                    status().isOk()
+            );
+        }
+
+        @Test
+        @DisplayName("실패 - 토큰이 없는 경우")
+        void fail_when_request_with_empty_token_return_bad_request() throws Exception {
+            //given
+
+            //when
+            ResultActions perform = mockMvc.perform(post("/member/logout")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON));
+
+            //then
+            perform.andDo(print()).andExpectAll(
+                    status().isBadRequest()
+            );
+        }
+
+    }
+
 
 }
