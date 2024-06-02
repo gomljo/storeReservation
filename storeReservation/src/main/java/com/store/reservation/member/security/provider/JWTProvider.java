@@ -1,7 +1,6 @@
 package com.store.reservation.member.security.provider;
 
 
-import com.store.reservation.auth.refreshToken.exception.TokenErrorCode;
 import com.store.reservation.auth.refreshToken.exception.TokenException;
 import com.store.reservation.auth.refreshToken.service.RefreshTokenService;
 import com.store.reservation.common.constants.TokenExpirationConstant;
@@ -44,7 +43,7 @@ public class JWTProvider {
     }
 
     public String reissue(String email, String refreshToken, Date today) {
-        if(!this.refreshTokenService.isSameToken(email, refreshToken)){
+        if (!this.refreshTokenService.isSameToken(email, refreshToken)) {
             throw new TokenException(INVALID_ACCESS);
         }
         return generateAccessToken(email, today);
@@ -81,7 +80,7 @@ public class JWTProvider {
     }
 
     public void deleteRefreshToken(String email) {
-        if(!this.refreshTokenService.isRefreshTokenExpired(email)){
+        if (!this.refreshTokenService.isRefreshTokenExpired(email)) {
             this.refreshTokenService.delete(email);
         }
     }

@@ -1,6 +1,5 @@
 package com.store.reservation.member.security.jwt;
 
-import com.store.reservation.common.constants.TokenExpirationConstant;
 import com.store.reservation.member.security.userDetails.SecurityUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

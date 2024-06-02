@@ -4,7 +4,6 @@ import com.store.reservation.member.domain.MemberInformation;
 import com.store.reservation.member.repository.MemberInformationRepository;
 import com.store.reservation.member.security.userDetails.SecurityUser;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;

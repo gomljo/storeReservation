@@ -6,8 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.Objects;
 
 @Getter
 @NoArgsConstructor
@@ -18,7 +19,10 @@ public class ReissueTokenDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime today;
 
-    public Date getDate(){
+    public Date getDate() {
+        if (Objects.isNull(this.today)) {
+            return null;
+        }
         return java.sql.Timestamp.valueOf(today);
     }
 }

@@ -15,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.Objects;
 
 import static com.store.reservation.member.exception.MemberError.*;
@@ -54,7 +53,7 @@ public class MemberService {
             throw new MemberRuntimeException(PASSWORD_NOT_MATCH);
         }
 
-        if(Objects.isNull(signInRequest.getDate())){
+        if (Objects.isNull(signInRequest.getDate())) {
             throw new MemberRuntimeException(TIME_EMPTY);
         }
 
@@ -74,10 +73,10 @@ public class MemberService {
     }
 
     public String reissue(String refreshToken, ReissueTokenDto reissueTokenDto) {
-        if(refreshToken.isEmpty()){
+        if (refreshToken.isEmpty()) {
             throw new TokenException(TokenErrorCode.EMPTY_TOKEN);
         }
-        if(Objects.isNull(reissueTokenDto.getDate())){
+        if (Objects.isNull(reissueTokenDto.getDate())) {
             throw new MemberRuntimeException(TIME_EMPTY);
         }
         return this.jwtProvider.reissue(reissueTokenDto.getEmail(), refreshToken, reissueTokenDto.getDate());
