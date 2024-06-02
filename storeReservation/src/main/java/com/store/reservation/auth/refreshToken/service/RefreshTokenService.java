@@ -31,5 +31,8 @@ public class RefreshTokenService {
     public void delete(String email) {
         refreshTokenRepository.deleteById(email);
     }
-
+    public boolean isSameToken(String email, String requestedRefreshToken){
+        RefreshToken refreshToken = refreshTokenRepository.findById(email).orElseThrow(()->new TokenException(NO_SUCH_TOKEN));
+        return refreshToken.isSameToken(requestedRefreshToken);
+    }
 }

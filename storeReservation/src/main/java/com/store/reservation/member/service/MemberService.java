@@ -1,6 +1,9 @@
 package com.store.reservation.member.service;
 
+import com.store.reservation.auth.refreshToken.exception.TokenErrorCode;
+import com.store.reservation.auth.refreshToken.exception.TokenException;
 import com.store.reservation.member.domain.MemberInformation;
+import com.store.reservation.member.dto.ReissueTokenDto;
 import com.store.reservation.member.dto.SignInDto;
 import com.store.reservation.member.dto.SignUpDto;
 import com.store.reservation.member.dto.TokenDto;
@@ -8,12 +11,12 @@ import com.store.reservation.member.exception.MemberRuntimeException;
 import com.store.reservation.member.repository.MemberInformationRepository;
 import com.store.reservation.member.security.provider.JWTProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.Objects;
 
 import static com.store.reservation.member.exception.MemberError.*;
 
@@ -50,6 +53,11 @@ public class MemberService {
         if (!this.passwordEncoder.matches(signInRequest.getPassword(), memberInformation.getPassword())) {
             throw new MemberRuntimeException(PASSWORD_NOT_MATCH);
         }
+
+        if(Objects.isNull(signInRequest.getDate())){
+            throw new MemberRuntimeException(TIME_EMPTY);
+        }
+
         String accessToken = this.jwtProvider.generateAccessToken(memberInformation.getEmail(), signInRequest.getDate());
         String refreshToken = this.jwtProvider.issueRefreshToken(memberInformation.getEmail(), signInRequest.getDate());
 
@@ -65,11 +73,13 @@ public class MemberService {
         this.jwtProvider.deleteRefreshToken(email);
     }
 
-    public String reissue(String refreshToken, Date today) {
-        Authentication authentication = this.jwtProvider.getAuthentication(refreshToken);
-        if (this.jwtProvider.isExpired(authentication.getName())) {
-            throw new MemberRuntimeException(TOKEN_EXPIRED);
+    public String reissue(String refreshToken, ReissueTokenDto reissueTokenDto) {
+        if(refreshToken.isEmpty()){
+            throw new TokenException(TokenErrorCode.EMPTY_TOKEN);
         }
-        return this.jwtProvider.generateAccessToken(authentication.getName(), today);
+        if(Objects.isNull(reissueTokenDto.getDate())){
+            throw new MemberRuntimeException(TIME_EMPTY);
+        }
+        return this.jwtProvider.reissue(reissueTokenDto.getEmail(), refreshToken, reissueTokenDto.getDate());
     }
 }

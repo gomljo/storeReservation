@@ -1,6 +1,7 @@
 package com.store.reservation.member.security.provider;
 
 
+import com.store.reservation.auth.refreshToken.exception.TokenErrorCode;
 import com.store.reservation.auth.refreshToken.exception.TokenException;
 import com.store.reservation.auth.refreshToken.service.RefreshTokenService;
 import com.store.reservation.common.constants.TokenExpirationConstant;
@@ -32,18 +33,21 @@ public class JWTProvider {
 
     public String generateAccessToken(String email, Date today) {
         SecurityUser securityUser = customUserDetailService.loadUserByUsername(email);
-        return jwt.generate(securityUser, today, tokenExpirationConstant.getAccessTokenExpiredDate(today));
+        return this.jwt.generate(securityUser, today, tokenExpirationConstant.getAccessTokenExpiredDate(today));
     }
 
     public String issueRefreshToken(String email, Date today) {
         SecurityUser securityUser = customUserDetailService.loadUserByUsername(email);
-        String refreshToken = jwt.generate(securityUser, today, tokenExpirationConstant.getRefreshTokenExpiredDate(today));
+        String refreshToken = this.jwt.generate(securityUser, today, tokenExpirationConstant.getRefreshTokenExpiredDate(today));
         this.refreshTokenService.save(email, refreshToken, tokenExpirationConstant.getRefreshTokenExpiredMinute());
         return refreshToken;
     }
 
-    public boolean isExpired(String userEmail) {
-        return this.refreshTokenService.isRefreshTokenExpired(userEmail);
+    public String reissue(String email, String refreshToken, Date today) {
+        if(!this.refreshTokenService.isSameToken(email, refreshToken)){
+            throw new TokenException(INVALID_ACCESS);
+        }
+        return generateAccessToken(email, today);
     }
 
 
@@ -52,7 +56,7 @@ public class JWTProvider {
             throw new TokenException(EMPTY_TOKEN);
         }
         String token = this.eliminatePrefix(headerValue);
-        String userName = jwt.getUserName(token);
+        String userName = this.jwt.getUserName(token);
         UserDetails userDetails = this.customUserDetailService.loadUserByUsername(userName);
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
@@ -77,6 +81,8 @@ public class JWTProvider {
     }
 
     public void deleteRefreshToken(String email) {
-        this.refreshTokenService.delete(email);
+        if(!this.refreshTokenService.isRefreshTokenExpired(email)){
+            this.refreshTokenService.delete(email);
+        }
     }
 }

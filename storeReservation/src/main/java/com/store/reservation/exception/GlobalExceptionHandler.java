@@ -16,7 +16,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiResponse<String> handleException(Exception e) {
-        return error(e.getCause().toString(), HttpStatus.BAD_REQUEST.toString());
+        return error(e.getClass().toString(), HttpStatus.BAD_REQUEST.toString());
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResponse<String> handleRuntimeException(RuntimeException runtimeException) {
+        return error(runtimeException.getClass().toString(), HttpStatus.BAD_REQUEST.toString());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

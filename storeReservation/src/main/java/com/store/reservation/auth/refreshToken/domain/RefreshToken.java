@@ -23,4 +23,8 @@ public class RefreshToken {
         this.refreshToken = refreshToken;
         this.expiration = expiration;
     }
+
+    public boolean isSameToken(String refreshToken){
+        return this.refreshToken.equals(refreshToken);
+    }
 }
