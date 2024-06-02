@@ -1,5 +1,6 @@
 package com.store.reservation.member.service;
 
+import com.store.reservation.auth.refreshToken.exception.TokenErrorCode;
 import com.store.reservation.auth.refreshToken.exception.TokenException;
 import com.store.reservation.member.domain.MemberInformation;
 import com.store.reservation.member.domain.type.Role;
@@ -26,8 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static com.store.reservation.auth.refreshToken.exception.TokenErrorCode.INVALID_ACCESS;
-import static com.store.reservation.auth.refreshToken.exception.TokenErrorCode.TOKEN_EXPIRED;
+import static com.store.reservation.auth.refreshToken.exception.TokenErrorCode.*;
 import static com.store.reservation.member.exception.MemberError.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -217,7 +217,7 @@ class MemberServiceTest {
     }
 
     @Nested
-    @DisplayName("로그아웃")
+    @DisplayName("로그아웃 테스트")
     class LogoutTest {
         @Test
         @DisplayName("성공")
@@ -228,5 +228,109 @@ class MemberServiceTest {
             memberService.logout(email);
             verify(jwtProvider, times(1)).deleteRefreshToken(anyString());
         }
+    }
+
+    @Nested
+    @DisplayName("접근 토큰 재발급 테스트")
+    class ReissueTest {
+
+        @Test
+        @DisplayName("성공 - 유효한 재발급 토큰과 요청자의 이메일 정보와 일치하고 요청 날짜 값이 null이 아닌 경우")
+        void success(){
+            // given
+            String expectedAccessToken = "newAccessToken";
+            String refreshToken = "validRefreshToken";
+            String email = "dev@gmail.com";
+            LocalDateTime today = LocalDateTime.now();
+            ReissueTokenDto reissueTokenDto = new ReissueTokenDto(email, today);
+
+            given(jwtProvider.reissue(anyString(), any(),any()))
+                    .willReturn(expectedAccessToken);
+
+            // when
+            String actualToken = memberService.reissue(refreshToken, reissueTokenDto);
+
+            // then
+            assertEquals(expectedAccessToken, actualToken);
+        }
+
+        @Test
+        @DisplayName("실패 - 만료된 재발급 토큰으로 재발급 요청하는 경우")
+        void fail_when_expired_refresh_token(){
+            // given
+            String refreshToken = "expiredRefreshToken";
+            String email = "dev@gmail.com";
+            LocalDateTime today = LocalDateTime.now();
+            ReissueTokenDto reissueTokenDto = new ReissueTokenDto(email, today);
+            TokenException expectedTokenException = new TokenException(NO_SUCH_TOKEN);
+            given(jwtProvider.reissue(anyString(), any(),any()))
+                    .willThrow(expectedTokenException);
+
+            // when
+            TokenException actualTokenException = assertThrows(TokenException.class, ()->memberService.reissue(refreshToken, reissueTokenDto));
+
+            // then
+            assertEquals(expectedTokenException.getErrorCode(), actualTokenException.getErrorCode());
+            assertEquals(expectedTokenException.getDescription(), actualTokenException.getDescription());
+        }
+
+        @Test
+        @DisplayName("실패 - 다른 사용자의 refresh token으로 재발급하려는 경우")
+        void fail_when_do_with_others_refresh_token(){
+            // given
+            String refreshToken = "expiredRefreshToken";
+            String email = "dev@gmail.com";
+            LocalDateTime today = LocalDateTime.now();
+            ReissueTokenDto reissueTokenDto = new ReissueTokenDto(email, today);
+            TokenException expectedTokenException = new TokenException(INVALID_ACCESS);
+            given(jwtProvider.reissue(anyString(), any(),any()))
+                    .willThrow(expectedTokenException);
+
+            // when
+            TokenException actualTokenException = assertThrows(TokenException.class,
+                    ()->memberService.reissue(refreshToken, reissueTokenDto));
+
+            // then
+            assertEquals(expectedTokenException.getErrorCode(), actualTokenException.getErrorCode());
+            assertEquals(expectedTokenException.getDescription(), actualTokenException.getDescription());
+        }
+
+        @Test
+        @DisplayName("실패 - 재발급 토큰 값이 없는 경우")
+        void fail_when_empty_refresh_token(){
+            // given
+            String refreshToken = "";
+            String email = "dev@gmail.com";
+            LocalDateTime today = LocalDateTime.now();
+            ReissueTokenDto reissueTokenDto = new ReissueTokenDto(email, today);
+            TokenException expectedTokenException = new TokenException(EMPTY_TOKEN);
+
+            // when
+            TokenException actualTokenException = assertThrows(TokenException.class, ()->memberService.reissue(refreshToken, reissueTokenDto));
+
+            // then
+            assertEquals(expectedTokenException.getErrorCode(), actualTokenException.getErrorCode());
+            assertEquals(expectedTokenException.getDescription(), actualTokenException.getDescription());
+        }
+
+        @Test
+        @DisplayName("실패 - 요청 날짜가 null인 경우")
+        void fail_when_request_date_is_null(){
+            // given
+            String refreshToken = "nonExpiredRefreshToken";
+            String email = "dev@gmail.com";
+            LocalDateTime today = null;
+            ReissueTokenDto reissueTokenDto = new ReissueTokenDto(email, today);
+            MemberRuntimeException expectedException = new MemberRuntimeException(TIME_EMPTY);
+
+            // when
+            MemberRuntimeException actualException = assertThrows(MemberRuntimeException.class,
+                    ()->memberService.reissue(refreshToken, reissueTokenDto));
+
+            // then
+            assertEquals(expectedException.getErrorCode(), actualException.getErrorCode());
+            assertEquals(expectedException.getDescription(), actualException.getDescription());
+        }
+
     }
 }

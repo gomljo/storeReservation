@@ -1,10 +1,11 @@
 package com.store.reservation.member.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.store.reservation.annotation.WithCustomer;
+import com.store.reservation.auth.refreshToken.exception.TokenException;
 import com.store.reservation.config.TestSecurityConfig;
 import com.store.reservation.member.domain.type.Role;
+import com.store.reservation.member.dto.ReissueTokenDto;
 import com.store.reservation.member.dto.SignInDto;
 import com.store.reservation.member.dto.SignUpDto;
 import com.store.reservation.member.exception.MemberRuntimeException;
@@ -30,8 +31,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static com.store.reservation.auth.refreshToken.exception.TokenErrorCode.*;
 import static com.store.reservation.member.exception.MemberError.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -436,9 +440,10 @@ class MemberControllerTest {
             actions.andExpect(status().isBadRequest());
         }
     }
+
     @Nested
     @DisplayName("로그아웃 API 테스트")
-    class LogoutTest{
+    class LogoutTest {
         @Test
         @DisplayName("성공")
         @WithCustomer(email = "dev@gmail.com")
@@ -474,5 +479,122 @@ class MemberControllerTest {
 
     }
 
+    @Nested
+    @DisplayName("접근 토큰 재발급 API 테스트")
+    class ReissueAPITest {
+        @Test
+        @WithCustomer(email = "dev@gmail.com")
+        @DisplayName("성공 - 요청 헤더에 유효한 refresh token이 존재하며, refresh token의 email과 email이 일치하는 경우")
+        void success() throws Exception {
+            //given
+            String newAccessToken = "newAccessToken";
+            given(memberService.reissue(anyString(), any()))
+                    .willReturn(newAccessToken);
+            ReissueTokenDto reissueTokenDto = new ReissueTokenDto("dev@gmail.com", LocalDateTime.now());
 
+            //when
+            ResultActions perform = mockMvc.perform(post("/member/reissue")
+                    .header("RefreshToken", "nonExpiredRefreshToken")
+                    .content(objectMapper.writeValueAsString(reissueTokenDto))
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON));
+
+            //then
+            perform.andDo(print()).andExpectAll(
+                    status().isOk()
+            );
+        }
+
+        @Test
+        @WithCustomer(email = "dev@gmail.com")
+        @DisplayName("실패 - 요청 헤더에 refresh token의 값이 없는 경우")
+        void fail_when_refresh_token_is_empty() throws Exception {
+            //given
+            TokenException tokenException = new TokenException(EMPTY_TOKEN);
+            given(memberService.reissue(anyString(), any()))
+                    .willThrow(tokenException);
+            ReissueTokenDto reissueTokenDto = new ReissueTokenDto("dev@gmail.com", LocalDateTime.now());
+
+            //when
+            ResultActions perform = mockMvc.perform(post("/member/reissue")
+                    .header("RefreshToken", "")
+                    .content(objectMapper.writeValueAsString(reissueTokenDto))
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON));
+
+            //then
+            perform.andDo(print()).andExpectAll(
+                    status().isBadRequest()
+            );
+        }
+
+        @Test
+        @WithCustomer(email = "dev@gmail.com")
+        @DisplayName("실패 - refresh token이 만료된 경우")
+        void fail_when_refresh_token_expired() throws Exception {
+            //given
+            TokenException tokenException = new TokenException(NO_SUCH_TOKEN);
+            given(memberService.reissue(anyString(), any()))
+                    .willThrow(tokenException);
+            ReissueTokenDto reissueTokenDto = new ReissueTokenDto("dev@gmail.com", LocalDateTime.now());
+
+            //when
+            ResultActions perform = mockMvc.perform(post("/member/reissue")
+                    .header("RefreshToken", "expired_refresh_token")
+                    .content(objectMapper.writeValueAsString(reissueTokenDto))
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON));
+
+            //then
+            perform.andDo(print()).andExpectAll(
+                    status().isBadRequest()
+            );
+        }
+
+        @Test
+        @WithCustomer(email = "dev@gmail.com")
+        @DisplayName("실패 - refresh token의 이메일 정보와 사용자가 전달한 이메일이 일치하지 않는 경우")
+        void fail_when_email_of_refresh_token_and_input_email_mismatch() throws Exception {
+            //given
+            TokenException tokenException = new TokenException(INVALID_ACCESS);
+            given(memberService.reissue(anyString(), any()))
+                    .willThrow(tokenException);
+            ReissueTokenDto reissueTokenDto = new ReissueTokenDto("dev@gmail.com", LocalDateTime.now());
+
+            //when
+            ResultActions perform = mockMvc.perform(post("/member/reissue")
+                    .header("RefreshToken", "expired_refresh_token")
+                    .content(objectMapper.writeValueAsString(reissueTokenDto))
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON));
+
+            //then
+            perform.andDo(print()).andExpectAll(
+                    status().isBadRequest()
+            );
+        }
+
+        @Test
+        @WithCustomer(email = "dev@gmail.com")
+        @DisplayName("실패 - 날짜 정보가 없는 경우")
+        void fail_when_date_is_empty() throws Exception {
+            //given
+            MemberRuntimeException exception = new MemberRuntimeException(TIME_EMPTY);
+            given(memberService.reissue(anyString(), any()))
+                    .willThrow(exception);
+            ReissueTokenDto reissueTokenDto = new ReissueTokenDto("dev@gmail.com", LocalDateTime.now());
+
+            //when
+            ResultActions perform = mockMvc.perform(post("/member/reissue")
+                    .header("RefreshToken", "expired_refresh_token")
+                    .content(objectMapper.writeValueAsString(reissueTokenDto))
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON));
+
+            //then
+            perform.andDo(print()).andExpectAll(
+                    status().isBadRequest()
+            );
+        }
+    }
 }
