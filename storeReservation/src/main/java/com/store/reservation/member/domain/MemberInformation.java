@@ -34,7 +34,7 @@ public class MemberInformation extends BaseEntity {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles;
 
-    public boolean isSame(Long id){
+    public boolean isSame(Long id) {
         return this.id.equals(id);
     }
 }

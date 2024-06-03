@@ -1,6 +1,7 @@
 package com.store.reservation.member.controller;
 
 import com.store.reservation.apiResponse.ApiResponse;
+import com.store.reservation.member.dto.ReissueTokenDto;
 import com.store.reservation.member.dto.SignInDto;
 import com.store.reservation.member.dto.SignUpDto;
 import com.store.reservation.member.dto.TokenDto;
@@ -13,7 +14,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Date;
 
 @RestController
 @RequestMapping("/member")
@@ -53,8 +53,9 @@ public class MemberController {
     @Operation(summary = "접근 토큰 재발급하기",
             description = "접근 토큰과 재발급 토큰으로 만료된 접근 토큰을 갱신",
             tags = "member-api")
-    public ApiResponse<String> reissue(@RequestHeader("RefreshToken") String refreshToken) {
-        return ApiResponse.success(this.customerService.reissue(refreshToken, new Date()));
+    public ApiResponse<String> reissue(@RequestHeader("RefreshToken") String refreshToken,
+                                       @RequestBody ReissueTokenDto reissueTokenDto) {
+        return ApiResponse.success(this.customerService.reissue(refreshToken, reissueTokenDto));
     }
 
 }

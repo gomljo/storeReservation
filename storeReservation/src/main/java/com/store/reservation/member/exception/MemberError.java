@@ -11,7 +11,9 @@ public enum MemberError {
     NO_SUCH_MEMBER("회원이 존재하지 않습니다"),
     PASSWORD_NOT_MATCH("비밀번호가 일치하지 않습니다"),
     ACCESS_DENIED("올바른 데이터 접근이 아닙니다."),
-    TOKEN_EXPIRED("토큰이 만료되었습니다.");
+    TOKEN_EXPIRED("토큰이 만료되었습니다."),
+    TIME_EMPTY("시간 값이 비어있습니다.")
+    ;
 
     private final String description;
 }
