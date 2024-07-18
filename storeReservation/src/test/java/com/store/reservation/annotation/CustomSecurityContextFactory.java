@@ -1,8 +1,8 @@
 package com.store.reservation.annotation;
 
-import com.store.reservation.member.domain.Member;
+import com.store.reservation.member.domain.MemberInformation;
 import com.store.reservation.member.domain.type.Role;
-import com.store.reservation.member.model.SecurityUser;
+import com.store.reservation.member.security.userDetails.SecurityUser;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -17,7 +17,7 @@ public class CustomSecurityContextFactory implements WithSecurityContextFactory<
     public SecurityContext createSecurityContext(WithCustomer withCustomer) {
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
-        Member customer = Member.builder()
+        MemberInformation customer = MemberInformation.builder()
                 .name("홍길동")
                 .email(withCustomer.email())
                 .password("11111")

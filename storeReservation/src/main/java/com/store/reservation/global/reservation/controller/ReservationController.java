@@ -3,7 +3,7 @@ package com.store.reservation.global.reservation.controller;
 import com.store.reservation.common.dto.SearchResponse;
 import com.store.reservation.global.reservation.facade.ReservationFacadeService;
 import com.store.reservation.global.reservation.state.ReservationStatusCode;
-import com.store.reservation.member.model.SecurityUser;
+import com.store.reservation.member.security.userDetails.SecurityUser;
 import com.store.reservation.reservation.constants.search.Duration;
 import com.store.reservation.reservation.constants.search.SortOption;
 import com.store.reservation.reservation.constants.state.ArrivalState;

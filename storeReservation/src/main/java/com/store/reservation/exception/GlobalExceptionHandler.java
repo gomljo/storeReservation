@@ -1,32 +1,41 @@
 package com.store.reservation.exception;
 
-import lombok.extern.slf4j.Slf4j;
+import com.store.reservation.apiResponse.ApiResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import static com.store.reservation.exception.GlobalErrorCode.INTERNAL_SERVER_ERROR;
+import static com.store.reservation.apiResponse.ApiResponse.error;
 
-@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ErrorResponse handleException(Exception e){
-        log.error("Exception is occurred.", e);
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiResponse<String> handleException(Exception e) {
+        return error(e.getClass().toString(), HttpStatus.BAD_REQUEST.toString());
+    }
 
-        return new ErrorResponse(
-                INTERNAL_SERVER_ERROR.toString(),
-                INTERNAL_SERVER_ERROR.getDescription()
-        );
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResponse<String> handleRuntimeException(RuntimeException runtimeException) {
+        return error(runtimeException.getClass().toString(), HttpStatus.BAD_REQUEST.toString());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResponse<String> handleValidationException(MethodArgumentNotValidException methodArgumentNotValidException) {
+        BindingResult bindingResult = methodArgumentNotValidException.getBindingResult();
+
+        return error(bindingResult.getFieldErrors().get(0).getDefaultMessage(), HttpStatus.BAD_REQUEST.toString());
     }
 
     @ExceptionHandler(CustomRuntimeException.class)
-    public ErrorResponse handleCustomException(CustomRuntimeException customRuntimeException){
-        log.error("사용자 정의 에러 발생", customRuntimeException);
-
-        return new ErrorResponse(
-                customRuntimeException.getErrorCode(),
-                customRuntimeException.getDescription()
-        );
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResponse<String> handleCustomException(CustomRuntimeException customRuntimeException) {
+        return error(customRuntimeException.getErrorCode(), customRuntimeException.getDescription());
     }
 }

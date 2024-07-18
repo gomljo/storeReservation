@@ -80,9 +80,8 @@ public class SwaggerConfig {
                 .apiInfo(apiInfo())
                 .consumes(getConsumeContextTypes())
                 .produces(getProduceContentTypes())
-                .securityContexts(Arrays.asList(securityContext("Authorization"),
-                        securityContext("RefreshToken")))
-                .securitySchemes(Arrays.asList(apiKey("Authorization"), apiKey("RefreshToken")))
+                .securityContexts(List.of(securityContext("Authorization")))
+                .securitySchemes(List.of(apiKey("Authorization")))
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.store.reservation"))
                 .paths(PathSelectors.any())
@@ -107,7 +106,7 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("keep")
-                .description("keep 백엔드 API를 테스트하고, 문서화합니다.")
+                .description("백엔드 API를 테스트하고, 문서화합니다.")
                 .version("1.0.0")
                 .build();
     }
@@ -116,7 +115,6 @@ public class SwaggerConfig {
         return new ApiKey(name, name, "header");
     }
 
-    //전역 AuthorizationScope를 사용하여 JWT SecurityContext를 구성.
     private SecurityContext securityContext(String name) {
         return SecurityContext.builder()
                 .securityReferences(defaultAuth(name))
