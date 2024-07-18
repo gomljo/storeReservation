@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 public class ImageUploadDto {
-
+    private Long userId;
     private Long domainId;
     private DomainType domainType;
     private ImageDto imageDto;
